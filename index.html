@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MTs Darul Arham</title>
+  
+  <!-- CSS Bootstrap 5 & FontAwesome CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  
+  <style>
+    body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; }
+    .login-box { max-width: 420px; margin: 80px auto; }
+    .main-card { border: none; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); border-radius: 12px; overflow: hidden; }
+    .hidden { display: none !important; }
+    .content-card { background-color: #ffffff; border-radius: 12px; padding: 24px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04); border: 1px solid #e9ecef; margin-bottom: 24px; }
+    .section-title { font-size: 1.05rem; font-weight: 700; color: #0d6efd; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #eef2f7; display: flex; align-items: center; }
+    .form-label { font-weight: 600; font-size: 0.85rem; color: #495057; margin-bottom: 4px; }
+    .form-control, .form-select { border-radius: 8px; padding: 0.5rem 0.75rem; border: 1px solid #ced4da; font-size: 0.9rem; }
+    .btn { border-radius: 8px; font-weight: 600; }
+    .table-custom { font-size: 0.9rem; vertical-align: middle; }
+    .nav-tabs .nav-link { font-weight: 600; color: #495057; border-radius: 8px 8px 0 0; }
+    .nav-tabs .nav-link.active { color: #0d6efd; border-bottom: 3px solid #0d6efd; }
+  </style>
+</head>
+<body>
+
+  <!-- FORM LOGIN -->
+  <div id="loginView" class="container login-box">
+    <div class="card main-card">
+      <div class="card-body p-4 p-md-5">
+        <div class="text-center mb-4">
+          <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex p-3 mb-3">
+            <i class="fas fa-graduation-cap fa-2x"></i>
+          </div>
+          <h4 class="fw-bold mb-1">MTs Darul Arham</h4>
+          <p class="text-muted small mb-0">Sistem Informasi Manajemen</p>
+        </div>
+        
+        <form id="formLogin" onsubmit="event.preventDefault(); submitLogin();">
+          <div class="mb-3">
+            <label class="form-label"><i class="fas fa-user me-2 text-primary"></i>Username</label>
+            <input type="text" id="loginUsername" class="form-control" placeholder="Masukkan Username" required>
+          </div>
+          <div class="mb-4">
+            <label class="form-label"><i class="fas fa-lock me-2 text-primary"></i>Password</label>
+            <input type="password" id="loginPassword" class="form-control" placeholder="Masukkan Password" required>
+          </div>
+          <button type="submit" id="btnLogin" class="btn btn-primary w-100 py-2">
+            <i class="fas fa-sign-in-alt me-2"></i> Masuk
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- DASHBOARD UTAMA -->
+  <div id="dashboardView" class="container-fluid px-4 py-4 hidden">
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+      <div>
+        <h3 class="fw-bold text-dark mb-1"><i class="fas fa-school text-primary me-2"></i>Sistem Informasi Sekolah</h3>
+        <span class="badge bg-light text-secondary border fw-normal">MTs Darul Arham | User: <strong id="namaOperator" class="text-primary">-</strong> (Akses Level: <span id="aksesOperator">-</span>)</span>
+      </div>
+      <button class="btn btn-outline-danger btn-sm px-3" onclick="logout()">
+        <i class="fas fa-sign-out-alt me-1"></i> Keluar
+      </button>
+    </div>
+
+    <!-- TAB MENU -->
+    <ul class="nav nav-tabs mb-4" id="mainTab" role="tablist">
+      <li class="nav-item" role="presentation" id="tabItemSiswa">
+        <button class="nav-link active" id="siswa-tab" data-bs-toggle="tab" data-bs-target="#siswa-tab-pane" type="button" role="tab" onclick="loadStudentData()"><i class="fas fa-user-graduate me-2"></i>Data Siswa</button>
+      </li>
+      <li class="nav-item" role="presentation" id="tabItemUser">
+        <button class="nav-link" id="user-tab" data-bs-toggle="tab" data-bs-target="#user-tab-pane" type="button" role="tab" onclick="loadUserData()"><i class="fas fa-users-cog me-2"></i>Data User</button>
+      </li>
+    </ul>
+
+    <div class="tab-content" id="mainTabContent">
+      <!-- TAB DATA SISWA -->
+      <div class="tab-pane fade show active" id="siswa-tab-pane" role="tabpanel" tabindex="0">
+        <div class="content-card">
+          <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <button class="btn btn-primary px-3" id="btnTambahSiswa" onclick="openAddModal()">
+              <i class="fas fa-user-plus me-1"></i> Tambah Siswa Baru
+            </button>
+            <div class="d-flex gap-2" style="max-width: 300px;">
+              <input type="text" id="searchBox" class="form-control" placeholder="Cari Nama / NISN / ID..." onkeyup="filterTable()">
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-hover table-bordered table-custom align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th width="50" class="text-center">No</th>
+                  <th width="80">ID</th>
+                  <th>Nama Lengkap</th>
+                  <th>NISN</th>
+                  <th>L/P</th>
+                  <th>Status</th>
+                  <th width="180" class="text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody">
+                <tr><td colspan="7" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm me-2"></div>Memuat data siswa...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB DATA USER -->
+      <div class="tab-pane fade" id="user-tab-pane" role="tabpanel" tabindex="0">
+        <div class="content-card">
+          <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <button class="btn btn-success px-3" id="btnTambahUser" onclick="openAddUserModal()">
+              <i class="fas fa-user-shield me-1"></i> Tambah User Baru
+            </button>
+            <div class="d-flex gap-2" style="max-width: 300px;">
+              <input type="text" id="searchUserBox" class="form-control" placeholder="Cari Nama / Username..." onkeyup="filterUserTable()">
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-hover table-bordered table-custom align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th width="50" class="text-center">No</th>
+                  <th width="80">ID</th>
+                  <th>Nama Lengkap</th>
+                  <th>Username</th>
+                  <th width="100" class="text-center">Akses</th>
+                  <th width="180" class="text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tableUserBody">
+                <tr><td colspan="6" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm me-2"></div>Memuat data user...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL SISWA -->
+  <div class="modal fade" id="modalSiswa" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold" id="modalSiswaTitle"><i class="fas fa-user-plus me-2"></i>Tambah Data Siswa</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formSiswa">
+            <input type="hidden" id="editRowIndex" value="">
+            <div class="section-title"><i class="fas fa-id-card me-2"></i> Identitas Utama</div>
+            <div class="row g-3 mb-3">
+              <div class="col-md-3"><label class="form-label">ID Siswa *</label><input type="text" id="id" class="form-control" required></div>
+              <div class="col-md-3"><label class="form-label">NIK</label><input type="text" id="nik" class="form-control"></div>
+              <div class="col-md-3"><label class="form-label">NIS</label><input type="text" id="nis" class="form-control"></div>
+              <div class="col-md-3"><label class="form-label">NISN</label><input type="text" id="nisn" class="form-control"></div>
+            </div>
+            <div class="section-title"><i class="fas fa-user me-2"></i> Profil Siswa</div>
+            <div class="row g-3 mb-3">
+              <div class="col-md-5"><label class="form-label">Nama Lengkap *</label><input type="text" id="nama" class="form-control" required></div>
+              <div class="col-md-3"><label class="form-label">Tempat Lahir</label><input type="text" id="tempatLahir" class="form-control"></div>
+              <div class="col-md-2"><label class="form-label">Tgl Lahir</label><input type="date" id="tglLahir" class="form-control"></div>
+              <div class="col-md-2"><label class="form-label">JK</label><select id="jk" class="form-select"><option value="L">Laki-Laki</option><option value="P">Perempuan</option></select></div>
+            </div>
+            <div class="section-title"><i class="fas fa-users me-2"></i> Riwayat & Orang Tua</div>
+            <div class="row g-3 mb-3">
+              <div class="col-md-4"><label class="form-label">Sekolah Asal</label><input type="text" id="sekolahAsal" class="form-control"></div>
+              <div class="col-md-4"><label class="form-label">Nama Ayah</label><input type="text" id="namaAyah" class="form-control"></div>
+              <div class="col-md-4"><label class="form-label">Nama Ibu</label><input type="text" id="namaIbu" class="form-control"></div>
+              <div class="col-md-4"><label class="form-label">Thn Masuk</label><input type="text" id="thnMasuk" class="form-control"></div>
+              <div class="col-md-4"><label class="form-label">Thn Keluar</label><input type="text" id="thnKeluar" class="form-control"></div>
+              <div class="col-md-4"><label class="form-label">Status</label><select id="status" class="form-select"><option value="Aktif">Aktif</option><option value="Lulus">Lulus</option><option value="Pindah">Pindah</option></select></div>
+            </div>
+            <div class="section-title"><i class="fab fa-google-drive me-2"></i> Tautan Berkas Google Drive</div>
+            <div class="row g-3">
+              <div class="col-md-6"><label class="form-label">Link Foto Awal</label><input type="url" id="urlFotoAwal" class="form-control"></div>
+              <div class="col-md-6"><label class="form-label">Link Foto Lulus</label><input type="url" id="urlFotoLulus" class="form-control"></div>
+              <div class="col-md-6"><label class="form-label">Link Foto KK</label><input type="url" id="urlFotoKK" class="form-control"></div>
+              <div class="col-md-6"><label class="form-label">Link Berkas Ijazah</label><input type="url" id="urlIjazah" class="form-control"></div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Batal</button>
+          <button type="button" id="btnSubmitForm" class="btn btn-primary px-4" onclick="submitFormSiswa()"><i class="fas fa-save me-1"></i> Simpan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DETAIL SISWA -->
+  <div class="modal fade" id="modalDetail" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title fw-bold"><i class="fas fa-info-circle me-2"></i>Detail Data Siswa</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body" id="detailContent"></div>
+        <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL USER -->
+  <div class="modal fade" id="modalUser" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title fw-bold" id="modalUserTitle"><i class="fas fa-user-plus me-2"></i>Tambah Data User</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          <form id="formUser">
+            <input type="hidden" id="editUserRowIndex" value="">
+            <div class="section-title"><i class="fas fa-user-lock me-2"></i> Akun & Level Akses</div>
+            <div class="row g-3 mb-3">
+              <div class="col-md-2"><label class="form-label">ID User *</label><input type="text" id="uId" class="form-control" required></div>
+              <div class="col-md-4"><label class="form-label">Nama Lengkap *</label><input type="text" id="uNama" class="form-control" required></div>
+              <div class="col-md-3"><label class="form-label">Username *</label><input type="text" id="uUsername" class="form-control" required></div>
+              <div class="col-md-3"><label class="form-label">Password *</label><input type="text" id="uPassword" class="form-control" required></div>
+              <div class="col-md-12"><label class="form-label">Level Akses (Nomor) *</label><input type="number" id="uAkses" class="form-control" required></div>
+            </div>
+            <div class="section-title"><i class="fas fa-sliders-h me-2"></i> Hak Akses Fitur (1 = Ya, 0 = Tidak)</div>
+            <div class="row g-3">
+              <div class="col-md-3"><label class="form-label">Akses Tab User</label><select id="uUser" class="form-select"><option value="1">1 (Izinkan)</option><option value="0">0 (Tolak)</option></select></div>
+              <div class="col-md-3"><label class="form-label">Detail User</label><select id="uDetailUser" class="form-select"><option value="1">1 (Izinkan)</option><option value="0">0 (Tolak)</option></select></div>
+              <div class="col-md-3"><label class="form-label">Tambah User</label><select id="uTambahUser" class="form-select"><option value="1">1 (Izinkan)</option><option value="0">0 (Tolak)</option></select></div>
+              <div class="col-md-3"><label class="form-label">Hapus User</label><select id="uHapusUser" class="form-select"><option value="1">1 (Izinkan)</option><option value="0">0 (Tolak)</option></select></div>
+              <div class="col-md-3"><label class="form-label">Akses Tab Siswa</label><select id="uSiswa" class="form-select"><option value="1">1 (Izinkan)</option><option value="0">0 (Tolak)</option></select></div>
+              <div class="col-md-3"><label class="form-label">Detail Siswa</label><select id="uDetailSiswa" class="form-select"><option value="1">1 (Izinkan)</option><option value="0">0 (Tolak)</option></select></div>
+              <div class="col-md-3"><label class="form-label">Tambah Siswa</label><select id="uTambahSiswa" class="form-select"><option value="1">1 (Izinkan)</option><option value="0">0 (Tolak)</option></select></div>
+              <div class="col-md-3"><label class="form-label">Hapus Siswa</label><select id="uHapusSiswa" class="form-select"><option value="1">1 (Izinkan)</option><option value="0">0 (Tolak)</option></select></div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer"><button type="button" class="btn btn-light border" data-bs-dismiss="modal">Batal</button><button type="button" id="btnSubmitUserForm" class="btn btn-success px-4" onclick="submitFormUser()"><i class="fas fa-save me-1"></i> Simpan User</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DETAIL USER -->
+  <div class="modal fade" id="modalUserDetail" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title fw-bold"><i class="fas fa-info-circle me-2"></i>Detail Hak Akses User</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body" id="userDetailContent"></div>
+        <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- LOGIC API & INTEGRASI GITHUB PAGES -->
+  <script>
+    // PASTEKAN URL WEB APP ANDA DI SINI
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxRHhnli5NeACvsri8fgB2MZHMaHSCmD-4KJ-ch_taxlut4z39ki_cl0nm554izrWVc/exec";
+
+    let globalStudentData = [];
+    let globalUserData = [];
+    let currentUserProfile = null;
+
+    let modalSiswaObj, modalDetailObj, modalUserObj, modalUserDetailObj;
+
+    document.addEventListener('DOMContentLoaded', function() {
+      modalSiswaObj = new bootstrap.Modal(document.getElementById('modalSiswa'));
+      modalDetailObj = new bootstrap.Modal(document.getElementById('modalDetail'));
+      modalUserObj = new bootstrap.Modal(document.getElementById('modalUser'));
+      modalUserDetailObj = new bootstrap.Modal(document.getElementById('modalUserDetail'));
+    });
+
+    async function apiCall(data) {
+      const response = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(data)
+      });
+      return await response.json();
+    }
+
+    async function submitLogin() {
+      const user = document.getElementById('loginUsername').value;
+      const pass = document.getElementById('loginPassword').value;
+      const btn = document.getElementById('btnLogin');
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Memeriksa...';
+
+      try {
+        const response = await apiCall({ action: 'checkLogin', username: user, password: pass });
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i> Masuk';
+
+        if (response.success) {
+          currentUserProfile = response.userProfile;
+          document.getElementById('namaOperator').innerText = currentUserProfile.namaUser;
+          document.getElementById('aksesOperator').innerText = currentUserProfile.akses;
+          document.getElementById('loginView').classList.add('hidden');
+          document.getElementById('dashboardView').classList.remove('hidden');
+          applyPermissions();
+        } else {
+          alert(response.message);
+        }
+      } catch (err) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i> Masuk';
+        alert("Gagal terhubung ke server: " + err.message);
+      }
+    }
+
+    function applyPermissions() {
+      if (currentUserProfile.canSiswaTab) {
+        document.getElementById('tabItemSiswa').classList.remove('hidden');
+        if (!currentUserProfile.canTambahSiswa) document.getElementById('btnTambahSiswa').classList.add('hidden');
+        else document.getElementById('btnTambahSiswa').classList.remove('hidden');
+      } else {
+        document.getElementById('tabItemSiswa').classList.add('hidden');
+      }
+
+      if (currentUserProfile.canUserTab) {
+        document.getElementById('tabItemUser').classList.remove('hidden');
+        if (!currentUserProfile.canTambahUser) document.getElementById('btnTambahUser').classList.add('hidden');
+        else document.getElementById('btnTambahUser').classList.remove('hidden');
+      } else {
+        document.getElementById('tabItemUser').classList.add('hidden');
+      }
+
+      if (currentUserProfile.canSiswaTab) {
+        new bootstrap.Tab(document.getElementById('siswa-tab')).show();
+        loadStudentData();
+      } else if (currentUserProfile.canUserTab) {
+        new bootstrap.Tab(document.getElementById('user-tab')).show();
+        loadUserData();
+      }
+    }
+
+    function logout() {
+      currentUserProfile = null;
+      document.getElementById('formLogin').reset();
+      document.getElementById('dashboardView').classList.add('hidden');
+      document.getElementById('loginView').classList.remove('hidden');
+    }
+
+    async function loadStudentData() {
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm me-2"></div>Memuat data siswa...</td></tr>';
+
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=getStudents`);
+        const response = await res.json();
+        if (response.error) {
+          tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-danger">${response.error}</td></tr>`;
+          return;
+        }
+        globalStudentData = response.data || [];
+        renderTable(globalStudentData);
+      } catch(err) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-danger">Gagal memuat data: ${err.message}</td></tr>`;
+      }
+    }
+
+    function renderTable(dataRows) {
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = '';
+      if (!dataRows || dataRows.length <= 1) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-muted">Belum ada data siswa.</td></tr>';
+        return;
+      }
+      let studentRows = dataRows.slice(1);
+      studentRows.forEach((row, index) => {
+        const originalIndex = globalStudentData.findIndex(r => r[0] === row[0] && r[4] === row[4]) - 1;
+        const tr = document.createElement('tr');
+        let statusBadge = '<span class="badge bg-success">Aktif</span>';
+        if (row[13] === 'Lulus') statusBadge = '<span class="badge bg-primary">Lulus</span>';
+        else if (row[13] === 'Pindah') statusBadge = '<span class="badge bg-warning text-dark">Pindah</span>';
+
+        let btnDetail = currentUserProfile.canDetailSiswa ? `<button class="btn btn-info btn-sm text-white px-2 py-1" onclick="showDetail(${originalIndex})"><i class="fas fa-eye"></i></button>` : '';
+        let btnEdit = currentUserProfile.canTambahSiswa ? `<button class="btn btn-warning btn-sm text-dark px-2 py-1" onclick="openEditModal(${originalIndex})"><i class="fas fa-edit"></i></button>` : '';
+        let btnHapus = currentUserProfile.canHapusSiswa ? `<button class="btn btn-danger btn-sm px-2 py-1" onclick="confirmDelete(${originalIndex})"><i class="fas fa-trash"></i></button>` : '';
+
+        tr.innerHTML = `
+          <td class="text-center fw-bold">${index + 1}</td>
+          <td>${row[0] || '-'}</td>
+          <td class="fw-semibold">${row[4] || '-'}</td>
+          <td>${row[3] || '-'}</td>
+          <td>${row[7] || '-'}</td>
+          <td>${statusBadge}</td>
+          <td class="text-center">${btnDetail} ${btnEdit} ${btnHapus}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function filterTable() {
+      const query = document.getElementById('searchBox').value.toLowerCase();
+      const filtered = globalStudentData.filter((row, idx) => idx === 0 || (row[0] + " " + row[3] + " " + row[4]).toLowerCase().includes(query));
+      renderTable(filtered);
+    }
+
+    function openAddModal() {
+      document.getElementById('formSiswa').reset();
+      document.getElementById('editRowIndex').value = '';
+      document.getElementById('modalSiswaTitle').innerHTML = '<i class="fas fa-user-plus me-2"></i>Tambah Data Siswa';
+      modalSiswaObj.show();
+    }
+
+    function openEditModal(rowIndex) {
+      document.getElementById('formSiswa').reset();
+      const rowData = globalStudentData[rowIndex + 1];
+      if (!rowData) return;
+      document.getElementById('editRowIndex').value = rowIndex;
+      document.getElementById('modalSiswaTitle').innerHTML = '<i class="fas fa-user-edit me-2"></i>Ubah Data Siswa';
+      document.getElementById('id').value = rowData[0] || '';
+      document.getElementById('nik').value = rowData[1] || '';
+      document.getElementById('nis').value = rowData[2] || '';
+      document.getElementById('nisn').value = rowData[3] || '';
+      document.getElementById('nama').value = rowData[4] || '';
+      document.getElementById('tempatLahir').value = rowData[5] || '';
+      document.getElementById('tglLahir').value = rowData[6] || '';
+      document.getElementById('jk').value = rowData[7] || 'L';
+      document.getElementById('sekolahAsal').value = rowData[8] || '';
+      document.getElementById('namaAyah').value = rowData[9] || '';
+      document.getElementById('namaIbu').value = rowData[10] || '';
+      document.getElementById('thnMasuk').value = rowData[11] || '';
+      document.getElementById('thnKeluar').value = rowData[12] || '';
+      document.getElementById('status').value = rowData[13] || 'Aktif';
+      document.getElementById('urlFotoAwal').value = rowData[14] || '';
+      document.getElementById('urlFotoLulus').value = rowData[15] || '';
+      document.getElementById('urlFotoKK').value = rowData[16] || '';
+      document.getElementById('urlIjazah').value = rowData[17] || '';
+      modalSiswaObj.show();
+    }
+
+    async function submitFormSiswa() {
+      const btn = document.getElementById('btnSubmitForm');
+      const editIndex = document.getElementById('editRowIndex').value;
+      const isEdit = editIndex !== '';
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...';
+
+      const formData = {
+        id: document.getElementById('id').value, nik: document.getElementById('nik').value,
+        nis: document.getElementById('nis').value, nisn: document.getElementById('nisn').value,
+        nama: document.getElementById('nama').value, tempatLahir: document.getElementById('tempatLahir').value,
+        tglLahir: document.getElementById('tglLahir').value, jk: document.getElementById('jk').value,
+        sekolahAsal: document.getElementById('sekolahAsal').value, namaAyah: document.getElementById('namaAyah').value,
+        namaIbu: document.getElementById('namaIbu').value, thnMasuk: document.getElementById('thnMasuk').value,
+        thnKeluar: document.getElementById('thnKeluar').value, status: document.getElementById('status').value,
+        urlFotoAwal: document.getElementById('urlFotoAwal').value, urlFotoLulus: document.getElementById('urlFotoLulus').value,
+        urlFotoKK: document.getElementById('urlFotoKK').value, urlIjazah: document.getElementById('urlIjazah').value
+      };
+
+      try {
+        const action = isEdit ? 'updateStudent' : 'saveStudent';
+        const response = await apiCall({ action, rowIndex: parseInt(editIndex), formData });
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-save me-1"></i> Simpan';
+        alert(response.message);
+        if (response.success) {
+          modalSiswaObj.hide();
+          loadStudentData();
+        }
+      } catch(err) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-save me-1"></i> Simpan';
+        alert("Gagal menyimpan: " + err.message);
+      }
+    }
+
+    function showDetail(rowIndex) {
+      const row = globalStudentData[rowIndex + 1];
+      if (!row) return;
+      const fileLink = (url, label) => url && url.startsWith('http') ? `<a href="${url}" target="_blank" class="btn btn-sm btn-outline-primary"><i class="fas fa-external-link-alt me-1"></i>Lihat ${label}</a>` : '<span class="text-muted small">Tidak Ada File</span>';
+
+      const html = `
+        <div class="row g-3">
+          <div class="col-md-6">
+            <table class="table table-sm table-borderless">
+              <tr><th width="120">ID Siswa</th><td>: ${row[0] || '-'}</td></tr>
+              <tr><th>NIK</th><td>: ${row[1] || '-'}</td></tr>
+              <tr><th>NIS</th><td>: ${row[2] || '-'}</td></tr>
+              <tr><th>NISN</th><td>: ${row[3] || '-'}</td></tr>
+              <tr><th>Nama</th><td>: <strong>${row[4] || '-'}</strong></td></tr>
+              <tr><th>TTL</th><td>: ${row[5] || '-'}, ${row[6] || '-'}</td></tr>
+              <tr><th>Jenis Kelamin</th><td>: ${row[7] === 'L' ? 'Laki-Laki' : 'Perempuan'}</td></tr>
+            </table>
+          </div>
+          <div class="col-md-6">
+            <table class="table table-sm table-borderless">
+              <tr><th width="120">Sekolah Asal</th><td>: ${row[8] || '-'}</td></tr>
+              <tr><th>Nama Ayah</th><td>: ${row[9] || '-'}</td></tr>
+              <tr><th>Nama Ibu</th><td>: ${row[10] || '-'}</td></tr>
+              <tr><th>Thn Masuk</th><td>: ${row[11] || '-'}</td></tr>
+              <tr><th>Thn Keluar</th><td>: ${row[12] || '-'}</td></tr>
+              <tr><th>Status</th><td>: <span class="badge bg-secondary">${row[13] || '-'}</span></td></tr>
+            </table>
+          </div>
+        </div>
+        <hr>
+        <h6 class="fw-bold mb-3"><i class="fas fa-paperclip me-2"></i>Berkas Tautan Google Drive</h6>
+        <div class="row g-2 text-center">
+          <div class="col-6 col-md-3"><div class="p-2 border rounded bg-light"><small class="d-block mb-1 fw-bold">Foto Awal</small>${fileLink(row[14], 'Foto')}</div></div>
+          <div class="col-6 col-md-3"><div class="p-2 border rounded bg-light"><small class="d-block mb-1 fw-bold">Foto Lulus</small>${fileLink(row[15], 'Foto')}</div></div>
+          <div class="col-6 col-md-3"><div class="p-2 border rounded bg-light"><small class="d-block mb-1 fw-bold">Foto KK</small>${fileLink(row[16], 'KK')}</div></div>
+          <div class="col-6 col-md-3"><div class="p-2 border rounded bg-light"><small class="d-block mb-1 fw-bold">Ijazah</small>${fileLink(row[17], 'Ijazah')}</div></div>
+        </div>
+      `;
+      document.getElementById('detailContent').innerHTML = html;
+      modalDetailObj.show();
+    }
+
+    async function confirmDelete(rowIndex) {
+      const row = globalStudentData[rowIndex + 1];
+      if (!row) return;
+
+      if (confirm(`Apakah Anda yakin ingin menghapus siswa "${row[4]}"?`)) {
+        try {
+          const response = await apiCall({ action: 'deleteStudent', rowIndex });
+          alert(response.message);
+          if (response.success) loadStudentData();
+        } catch(err) {
+          alert("Gagal menghapus: " + err.message);
+        }
+      }
+    }
+
+    async function loadUserData() {
+      const tbody = document.getElementById('tableUserBody');
+      tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm me-2"></div>Memuat data user...</td></tr>';
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=getUsers&akses=${currentUserProfile.akses}`);
+        const response = await res.json();
+        if (response.error) {
+          tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-danger">${response.error}</td></tr>`;
+          return;
+        }
+        globalUserData = response.data || [];
+        renderUserTable(globalUserData);
+      } catch(err) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-danger">Gagal memuat user: ${err.message}</td></tr>`;
+      }
+    }
+
+    function renderUserTable(dataRows) {
+      const tbody = document.getElementById('tableUserBody');
+      tbody.innerHTML = '';
+      if (!dataRows || dataRows.length <= 1) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">Belum ada data user.</td></tr>';
+        return;
+      }
+      let userRows = dataRows.slice(1);
+      userRows.forEach((row, index) => {
+        const originalIndex = globalUserData.findIndex(r => r[0] === row[0] && r[2] === row[2]) - 1;
+        const tr = document.createElement('tr');
+        let btnDetail = currentUserProfile.canDetailUser ? `<button class="btn btn-info btn-sm text-white px-2 py-1" onclick="showUserDetail(${originalIndex})"><i class="fas fa-eye"></i></button>` : '';
+        let btnEdit = currentUserProfile.canTambahUser ? `<button class="btn btn-warning btn-sm text-dark px-2 py-1" onclick="openEditUserModal(${originalIndex})"><i class="fas fa-edit"></i></button>` : '';
+        let btnHapus = currentUserProfile.canHapusUser ? `<button class="btn btn-danger btn-sm px-2 py-1" onclick="confirmDeleteUser(${originalIndex})"><i class="fas fa-trash"></i></button>` : '';
+
+        tr.innerHTML = `
+          <td class="text-center fw-bold">${index + 1}</td>
+          <td>${row[0] || '-'}</td>
+          <td class="fw-semibold">${row[1] || '-'}</td>
+          <td>${row[2] || '-'}</td>
+          <td class="text-center"><span class="badge bg-secondary">Akses ${row[4]}</span></td>
+          <td class="text-center">${btnDetail} ${btnEdit} ${btnHapus}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function filterUserTable() {
+      const query = document.getElementById('searchUserBox').value.toLowerCase();
+      const filtered = globalUserData.filter((row, idx) => idx === 0 || (row[0] + " " + row[1] + " " + row[2]).toLowerCase().includes(query));
+      renderUserTable(filtered);
+    }
+
+    function openAddUserModal() {
+      document.getElementById('formUser').reset();
+      document.getElementById('editUserRowIndex').value = '';
+      document.getElementById('modalUserTitle').innerHTML = '<i class="fas fa-user-plus me-2"></i>Tambah Data User';
+      modalUserObj.show();
+    }
+
+    function openEditUserModal(rowIndex) {
+      document.getElementById('formUser').reset();
+      const rowData = globalUserData[rowIndex + 1];
+      if (!rowData) return;
+      document.getElementById('editUserRowIndex').value = rowIndex;
+      document.getElementById('modalUserTitle').innerHTML = '<i class="fas fa-user-edit me-2"></i>Ubah Data User';
+      document.getElementById('uId').value = rowData[0] || '';
+      document.getElementById('uNama').value = rowData[1] || '';
+      document.getElementById('uUsername').value = rowData[2] || '';
+      document.getElementById('uPassword').value = rowData[3] || '';
+      document.getElementById('uAkses').value = rowData[4] || '';
+      document.getElementById('uUser').value = rowData[5] || '0';
+      document.getElementById('uDetailUser').value = rowData[6] || '0';
+      document.getElementById('uTambahUser').value = rowData[7] || '0';
+      document.getElementById('uHapusUser').value = rowData[8] || '0';
+      document.getElementById('uSiswa').value = rowData[9] || '0';
+      document.getElementById('uDetailSiswa').value = rowData[10] || '0';
+      document.getElementById('uTambahSiswa').value = rowData[11] || '0';
+      document.getElementById('uHapusSiswa').value = rowData[12] || '0';
+      modalUserObj.show();
+    }
+
+    async function submitFormUser() {
+      const btn = document.getElementById('btnSubmitUserForm');
+      const editIndex = document.getElementById('editUserRowIndex').value;
+      const isEdit = editIndex !== '';
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...';
+
+      const formData = {
+        id: document.getElementById('uId').value, nama: document.getElementById('uNama').value,
+        username: document.getElementById('uUsername').value, password: document.getElementById('uPassword').value,
+        akses: document.getElementById('uAkses').value, user: document.getElementById('uUser').value,
+        detailUser: document.getElementById('uDetailUser').value, tambahUser: document.getElementById('uTambahUser').value,
+        hapusUser: document.getElementById('uHapusUser').value, siswa: document.getElementById('uSiswa').value,
+        detailSiswa: document.getElementById('uDetailSiswa').value, tambahSiswa: document.getElementById('uTambahSiswa').value,
+        hapusSiswa: document.getElementById('uHapusSiswa').value
+      };
+
+      try {
+        const action = isEdit ? 'updateUser' : 'saveUser';
+        const response = await apiCall({ action, rowIndex: parseInt(editIndex), formData });
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-save me-1"></i> Simpan User';
+        alert(response.message);
+        if (response.success) {
+          modalUserObj.hide();
+          loadUserData();
+        }
+      } catch(err) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-save me-1"></i> Simpan User';
+        alert("Gagal menyimpan user: " + err.message);
+      }
+    }
+
+    function showUserDetail(rowIndex) {
+      const row = globalUserData[rowIndex + 1];
+      if (!row) return;
+      const badge = (val) => val == 1 ? '<span class="badge bg-success">Izinkan</span>' : '<span class="badge bg-danger">Tolak</span>';
+      const html = `
+        <table class="table table-sm table-bordered">
+          <tr><th>ID User</th><td>${row[0]}</td></tr>
+          <tr><th>Nama Lengkap</th><td>${row[1]}</td></tr>
+          <tr><th>Username</th><td>${row[2]}</td></tr>
+          <tr><th>Level Akses</th><td>Level ${row[4]}</td></tr>
+        </table>
+        <h6 class="fw-bold mt-3">Detail Hak Akses Fitur:</h6>
+        <div class="row g-2">
+          <div class="col-6">Tab User: ${badge(row[5])}</div><div class="col-6">Tab Siswa: ${badge(row[9])}</div>
+          <div class="col-6">Detail User: ${badge(row[6])}</div><div class="col-6">Detail Siswa: ${badge(row[10])}</div>
+          <div class="col-6">Tambah User: ${badge(row[7])}</div><div class="col-6">Tambah Siswa: ${badge(row[11])}</div>
+          <div class="col-6">Hapus User: ${badge(row[8])}</div><div class="col-6">Hapus Siswa: ${badge(row[12])}</div>
+        </div>
+      `;
+      document.getElementById('userDetailContent').innerHTML = html;
+      modalUserDetailObj.show();
+    }
+
+    async function confirmDeleteUser(rowIndex) {
+      const row = globalUserData[rowIndex + 1];
+      if (!row) return;
+      if (confirm(`Apakah Anda yakin ingin menghapus user "${row[1]}"?`)) {
+        try {
+          const response = await apiCall({ action: 'deleteUser', rowIndex });
+          alert(response.message);
+          if (response.success) loadUserData();
+        } catch(err) {
+          alert("Gagal menghapus user: " + err.message);
+        }
+      }
+    }
+  </script>
+</body>
+</html>
