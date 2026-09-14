@@ -5,11 +5,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>MTs Darul Arham</title>
-  
-  <!-- CSS Bootstrap 5 & FontAwesome CDN -->
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-  
+
   <style>
     body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; }
     .login-box { max-width: 420px; margin: 80px auto; }
@@ -38,7 +37,7 @@
           <h4 class="fw-bold mb-1">MTs Darul Arham</h4>
           <p class="text-muted small mb-0">Sistem Informasi Manajemen</p>
         </div>
-        
+
         <form id="formLogin" onsubmit="event.preventDefault(); submitLogin();">
           <div class="mb-3">
             <label class="form-label"><i class="fas fa-user me-2 text-primary"></i>Username</label>
@@ -68,7 +67,6 @@
       </button>
     </div>
 
-    <!-- TAB MENU -->
     <ul class="nav nav-tabs mb-4" id="mainTab" role="tablist">
       <li class="nav-item" role="presentation" id="tabItemSiswa">
         <button class="nav-link active" id="siswa-tab" data-bs-toggle="tab" data-bs-target="#siswa-tab-pane" type="button" role="tab" onclick="loadStudentData()"><i class="fas fa-user-graduate me-2"></i>Data Siswa</button>
@@ -79,7 +77,6 @@
     </ul>
 
     <div class="tab-content" id="mainTabContent">
-      <!-- TAB DATA SISWA -->
       <div class="tab-pane fade show active" id="siswa-tab-pane" role="tabpanel" tabindex="0">
         <div class="content-card">
           <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
@@ -110,7 +107,6 @@
         </div>
       </div>
 
-      <!-- TAB DATA USER -->
       <div class="tab-pane fade" id="user-tab-pane" role="tabpanel" tabindex="0">
         <div class="content-card">
           <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
@@ -143,7 +139,7 @@
     </div>
   </div>
 
-  <!-- MODAL SISWA (TAMBAH / EDIT) -->
+  <!-- MODAL SISWA -->
   <div class="modal fade" id="modalSiswa" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
       <div class="modal-content">
@@ -258,9 +254,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!-- LOGIC API & INTEGRASI GITHUB PAGES -->
   <script>
-    // PASTEKAN URL WEB APP EXEC ANDA DI SINI
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbznJeJJADB6gehiebeDzvzZtP1UgjNOtvGID3M4635-trk3YPUGZJRaWVuCnLrtKD5o/exec";
 
     let globalStudentData = [];
@@ -276,6 +270,7 @@
       modalUserDetailObj = new bootstrap.Modal(document.getElementById('modalUserDetail'));
     });
 
+    // POST helper untuk simpan/edit/hapus
     async function apiCall(data) {
       const response = await fetch(SCRIPT_URL, {
         method: 'POST',
@@ -285,6 +280,7 @@
       return await response.json();
     }
 
+    // ====== LOGIN (VERSI GET - SUDAH DIPERBAIKI) ======
     async function submitLogin() {
       const user = document.getElementById('loginUsername').value;
       const pass = document.getElementById('loginPassword').value;
@@ -294,7 +290,10 @@
       btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Memeriksa...';
 
       try {
-        const response = await apiCall({ action: 'checkLogin', username: user, password: pass });
+        const url = `${SCRIPT_URL}?action=checkLogin&username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}`;
+        const res = await fetch(url);
+        const response = await res.json();
+
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i> Masuk';
 
@@ -309,9 +308,10 @@
           alert(response.message);
         }
       } catch (err) {
+        console.error(err);
         btn.disabled = false;
         btn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i> Masuk';
-        alert("Gagal terhubung ke server: " + err.message);
+        alert("Gagal: " + err.message);
       }
     }
 
@@ -348,7 +348,6 @@
       document.getElementById('loginView').classList.remove('hidden');
     }
 
-    // Helper Format Tingkat Romawi
     function formatTingkat(val) {
       const t = String(val).trim();
       if (t === '7') return 'VII';
@@ -384,25 +383,17 @@
         return;
       }
 
-      // Ambil data tanpa header
       let studentRows = dataRows.slice(1).map((row, idx) => ({ rowData: row, originalIndex: idx }));
 
-      // LOGIKA SORTING: 1. Status (Aktif duluan), 2. Tingkat (Besar ke Kecil), 3. Nama (A-Z)
       studentRows.sort((a, b) => {
         const rA = a.rowData;
         const rB = b.rowData;
-
-        // 1. Status (Aktif = 0, selain Aktif = 1)
         const statusA = (rA[13] || '').toLowerCase() === 'aktif' ? 0 : 1;
         const statusB = (rB[13] || '').toLowerCase() === 'aktif' ? 0 : 1;
         if (statusA !== statusB) return statusA - statusB;
-
-        // 2. Tingkat (Angka Besar ke Kecil)
         const tingkatA = parseInt(rA[14], 10) || 0;
         const tingkatB = parseInt(rB[14], 10) || 0;
         if (tingkatA !== tingkatB) return tingkatB - tingkatA;
-
-        // 3. Nama (A-Z)
         const namaA = (rA[4] || '').toLowerCase();
         const namaB = (rB[4] || '').toLowerCase();
         return namaA.localeCompare(namaB);
@@ -451,7 +442,7 @@
       if (!rowData) return;
       document.getElementById('editRowIndex').value = rowIndex;
       document.getElementById('modalSiswaTitle').innerHTML = '<i class="fas fa-user-edit me-2"></i>Ubah Data Siswa';
-      
+
       document.getElementById('id').value = rowData[0] || '';
       document.getElementById('nik').value = rowData[1] || '';
       document.getElementById('nis').value = rowData[2] || '';
@@ -485,24 +476,24 @@
       btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...';
 
       const formData = {
-        id: document.getElementById('id').value, 
+        id: document.getElementById('id').value,
         nik: document.getElementById('nik').value,
-        nis: document.getElementById('nis').value, 
+        nis: document.getElementById('nis').value,
         nisn: document.getElementById('nisn').value,
-        nama: document.getElementById('nama').value, 
+        nama: document.getElementById('nama').value,
         tempatLahir: document.getElementById('tempatLahir').value,
-        tglLahir: document.getElementById('tglLahir').value, 
+        tglLahir: document.getElementById('tglLahir').value,
         jk: document.getElementById('jk').value,
-        sekolahAsal: document.getElementById('sekolahAsal').value, 
+        sekolahAsal: document.getElementById('sekolahAsal').value,
         namaAyah: document.getElementById('namaAyah').value,
-        namaIbu: document.getElementById('namaIbu').value, 
+        namaIbu: document.getElementById('namaIbu').value,
         thnMasuk: document.getElementById('thnMasuk').value,
-        thnKeluar: document.getElementById('thnKeluar').value, 
+        thnKeluar: document.getElementById('thnKeluar').value,
         status: document.getElementById('status').value,
         tingkat: document.getElementById('tingkat').value,
-        urlFotoAwal: document.getElementById('urlFotoAwal').value, 
+        urlFotoAwal: document.getElementById('urlFotoAwal').value,
         urlFotoLulus: document.getElementById('urlFotoLulus').value,
-        urlFotoKK: document.getElementById('urlFotoKK').value, 
+        urlFotoKK: document.getElementById('urlFotoKK').value,
         urlIjazah: document.getElementById('urlIjazah').value,
         melanjutkan: document.getElementById('melanjutkan').value,
         keterangan: document.getElementById('keterangan').value
@@ -673,17 +664,17 @@
       btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...';
 
       const formData = {
-        id: document.getElementById('uId').value, 
+        id: document.getElementById('uId').value,
         nama: document.getElementById('uNama').value,
-        username: document.getElementById('uUsername').value, 
+        username: document.getElementById('uUsername').value,
         password: document.getElementById('uPassword').value,
-        akses: document.getElementById('uAkses').value, 
+        akses: document.getElementById('uAkses').value,
         user: document.getElementById('uUser').value,
-        detailUser: document.getElementById('uDetailUser').value, 
+        detailUser: document.getElementById('uDetailUser').value,
         tambahUser: document.getElementById('uTambahUser').value,
-        hapusUser: document.getElementById('uHapusUser').value, 
+        hapusUser: document.getElementById('uHapusUser').value,
         siswa: document.getElementById('uSiswa').value,
-        detailSiswa: document.getElementById('uDetailSiswa').value, 
+        detailSiswa: document.getElementById('uDetailSiswa').value,
         tambahSiswa: document.getElementById('uTambahSiswa').value,
         hapusSiswa: document.getElementById('uHapusSiswa').value
       };
