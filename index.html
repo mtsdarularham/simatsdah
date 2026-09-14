@@ -97,14 +97,13 @@
                   <th width="50" class="text-center">No</th>
                   <th width="80">ID</th>
                   <th>Nama Lengkap</th>
-                  <th>NISN</th>
-                  <th>L/P</th>
-                  <th>Status</th>
-                  <th width="180" class="text-center">Aksi</th>
+                  <th width="80" class="text-center">L/P</th>
+                  <th width="120" class="text-center">Tingkat</th>
+                  <th width="160" class="text-center">Aksi</th>
                 </tr>
               </thead>
               <tbody id="tableBody">
-                <tr><td colspan="7" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm me-2"></div>Memuat data siswa...</td></tr>
+                <tr><td colspan="6" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm me-2"></div>Memuat data siswa...</td></tr>
               </tbody>
             </table>
           </div>
@@ -144,7 +143,7 @@
     </div>
   </div>
 
-  <!-- MODAL SISWA -->
+  <!-- MODAL SISWA (TAMBAH / EDIT) -->
   <div class="modal fade" id="modalSiswa" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
       <div class="modal-content">
@@ -169,14 +168,20 @@
               <div class="col-md-2"><label class="form-label">Tgl Lahir</label><input type="date" id="tglLahir" class="form-control"></div>
               <div class="col-md-2"><label class="form-label">JK</label><select id="jk" class="form-select"><option value="L">Laki-Laki</option><option value="P">Perempuan</option></select></div>
             </div>
-            <div class="section-title"><i class="fas fa-users me-2"></i> Riwayat & Orang Tua</div>
+            <div class="section-title"><i class="fas fa-users me-2"></i> Riwayat, Status & Tingkat</div>
             <div class="row g-3 mb-3">
               <div class="col-md-4"><label class="form-label">Sekolah Asal</label><input type="text" id="sekolahAsal" class="form-control"></div>
               <div class="col-md-4"><label class="form-label">Nama Ayah</label><input type="text" id="namaAyah" class="form-control"></div>
               <div class="col-md-4"><label class="form-label">Nama Ibu</label><input type="text" id="namaIbu" class="form-control"></div>
-              <div class="col-md-4"><label class="form-label">Thn Masuk</label><input type="text" id="thnMasuk" class="form-control"></div>
-              <div class="col-md-4"><label class="form-label">Thn Keluar</label><input type="text" id="thnKeluar" class="form-control"></div>
-              <div class="col-md-4"><label class="form-label">Status</label><select id="status" class="form-select"><option value="Aktif">Aktif</option><option value="Lulus">Lulus</option><option value="Pindah">Pindah</option></select></div>
+              <div class="col-md-3"><label class="form-label">Thn Masuk</label><input type="text" id="thnMasuk" class="form-control"></div>
+              <div class="col-md-3"><label class="form-label">Thn Keluar</label><input type="text" id="thnKeluar" class="form-control"></div>
+              <div class="col-md-3"><label class="form-label">Status</label><select id="status" class="form-select"><option value="Aktif">Aktif</option><option value="Lulus">Lulus</option><option value="Pindah">Pindah</option></select></div>
+              <div class="col-md-3"><label class="form-label">Tingkat</label><select id="tingkat" class="form-select"><option value="7">7 (VII)</option><option value="8">8 (VIII)</option><option value="9">9 (IX)</option><option value="0">0 (Alumni)</option></select></div>
+            </div>
+            <div class="section-title"><i class="fas fa-info-circle me-2"></i> Informasi Tambahan</div>
+            <div class="row g-3 mb-3">
+              <div class="col-md-6"><label class="form-label">Melanjutkan Ke</label><input type="text" id="melanjutkan" class="form-control" placeholder="Contoh: SMA 1 Garut"></div>
+              <div class="col-md-6"><label class="form-label">Keterangan</label><input type="text" id="keterangan" class="form-control" placeholder="Catatan khusus..."></div>
             </div>
             <div class="section-title"><i class="fab fa-google-drive me-2"></i> Tautan Berkas Google Drive</div>
             <div class="row g-3">
@@ -255,8 +260,8 @@
 
   <!-- LOGIC API & INTEGRASI GITHUB PAGES -->
   <script>
-    // PASTEKAN URL WEB APP ANDA DI SINI
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxRHhnli5NeACvsri8fgB2MZHMaHSCmD-4KJ-ch_taxlut4z39ki_cl0nm554izrWVc/exec";
+    // PASTEKAN URL WEB APP EXEC ANDA DI SINI
+    const SCRIPT_URL = "TEMPEL_URL_EXEC_KAMU_DI_SINI";
 
     let globalStudentData = [];
     let globalUserData = [];
@@ -343,21 +348,31 @@
       document.getElementById('loginView').classList.remove('hidden');
     }
 
+    // Helper Format Tingkat Romawi
+    function formatTingkat(val) {
+      const t = String(val).trim();
+      if (t === '7') return 'VII';
+      if (t === '8') return 'VIII';
+      if (t === '9') return 'IX';
+      if (t === '0') return 'Alumni';
+      return t || '-';
+    }
+
     async function loadStudentData() {
       const tbody = document.getElementById('tableBody');
-      tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm me-2"></div>Memuat data siswa...</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted"><div class="spinner-border spinner-border-sm me-2"></div>Memuat data siswa...</td></tr>';
 
       try {
         const res = await fetch(`${SCRIPT_URL}?action=getStudents`);
         const response = await res.json();
         if (response.error) {
-          tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-danger">${response.error}</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-danger">${response.error}</td></tr>`;
           return;
         }
         globalStudentData = response.data || [];
         renderTable(globalStudentData);
       } catch(err) {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-danger">Gagal memuat data: ${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-danger">Gagal memuat data: ${err.message}</td></tr>`;
       }
     }
 
@@ -365,16 +380,41 @@
       const tbody = document.getElementById('tableBody');
       tbody.innerHTML = '';
       if (!dataRows || dataRows.length <= 1) {
-        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-muted">Belum ada data siswa.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-muted">Belum ada data siswa.</td></tr>';
         return;
       }
-      let studentRows = dataRows.slice(1);
-      studentRows.forEach((row, index) => {
-        const originalIndex = globalStudentData.findIndex(r => r[0] === row[0] && r[4] === row[4]) - 1;
+
+      // Ambil data tanpa header
+      let studentRows = dataRows.slice(1).map((row, idx) => ({ rowData: row, originalIndex: idx }));
+
+      // LOGIKA SORTING: 1. Status (Aktif duluan), 2. Tingkat (Besar ke Kecil), 3. Nama (A-Z)
+      studentRows.sort((a, b) => {
+        const rA = a.rowData;
+        const rB = b.rowData;
+
+        // 1. Status (Aktif = 0, selain Aktif = 1)
+        const statusA = (rA[13] || '').toLowerCase() === 'aktif' ? 0 : 1;
+        const statusB = (rB[13] || '').toLowerCase() === 'aktif' ? 0 : 1;
+        if (statusA !== statusB) return statusA - statusB;
+
+        // 2. Tingkat (Angka Besar ke Kecil)
+        const tingkatA = parseInt(rA[14], 10) || 0;
+        const tingkatB = parseInt(rB[14], 10) || 0;
+        if (tingkatA !== tingkatB) return tingkatB - tingkatA;
+
+        // 3. Nama (A-Z)
+        const namaA = (rA[4] || '').toLowerCase();
+        const namaB = (rB[4] || '').toLowerCase();
+        return namaA.localeCompare(namaB);
+      });
+
+      studentRows.forEach((item, index) => {
+        const row = item.rowData;
+        const originalIndex = item.originalIndex;
         const tr = document.createElement('tr');
-        let statusBadge = '<span class="badge bg-success">Aktif</span>';
-        if (row[13] === 'Lulus') statusBadge = '<span class="badge bg-primary">Lulus</span>';
-        else if (row[13] === 'Pindah') statusBadge = '<span class="badge bg-warning text-dark">Pindah</span>';
+
+        const jkFormatted = row[7] === 'L' ? 'L' : (row[7] === 'P' ? 'P' : '-');
+        const tingkatFormatted = formatTingkat(row[14]);
 
         let btnDetail = currentUserProfile.canDetailSiswa ? `<button class="btn btn-info btn-sm text-white px-2 py-1" onclick="showDetail(${originalIndex})"><i class="fas fa-eye"></i></button>` : '';
         let btnEdit = currentUserProfile.canTambahSiswa ? `<button class="btn btn-warning btn-sm text-dark px-2 py-1" onclick="openEditModal(${originalIndex})"><i class="fas fa-edit"></i></button>` : '';
@@ -384,9 +424,8 @@
           <td class="text-center fw-bold">${index + 1}</td>
           <td>${row[0] || '-'}</td>
           <td class="fw-semibold">${row[4] || '-'}</td>
-          <td>${row[3] || '-'}</td>
-          <td>${row[7] || '-'}</td>
-          <td>${statusBadge}</td>
+          <td class="text-center">${jkFormatted}</td>
+          <td class="text-center"><span class="badge bg-secondary">${tingkatFormatted}</span></td>
           <td class="text-center">${btnDetail} ${btnEdit} ${btnHapus}</td>
         `;
         tbody.appendChild(tr);
@@ -412,6 +451,7 @@
       if (!rowData) return;
       document.getElementById('editRowIndex').value = rowIndex;
       document.getElementById('modalSiswaTitle').innerHTML = '<i class="fas fa-user-edit me-2"></i>Ubah Data Siswa';
+      
       document.getElementById('id').value = rowData[0] || '';
       document.getElementById('nik').value = rowData[1] || '';
       document.getElementById('nis').value = rowData[2] || '';
@@ -426,10 +466,13 @@
       document.getElementById('thnMasuk').value = rowData[11] || '';
       document.getElementById('thnKeluar').value = rowData[12] || '';
       document.getElementById('status').value = rowData[13] || 'Aktif';
-      document.getElementById('urlFotoAwal').value = rowData[14] || '';
-      document.getElementById('urlFotoLulus').value = rowData[15] || '';
-      document.getElementById('urlFotoKK').value = rowData[16] || '';
-      document.getElementById('urlIjazah').value = rowData[17] || '';
+      document.getElementById('tingkat').value = rowData[14] !== undefined ? rowData[14] : '7';
+      document.getElementById('urlFotoAwal').value = rowData[15] || '';
+      document.getElementById('urlFotoLulus').value = rowData[16] || '';
+      document.getElementById('urlFotoKK').value = rowData[17] || '';
+      document.getElementById('urlIjazah').value = rowData[18] || '';
+      document.getElementById('melanjutkan').value = rowData[19] || '';
+      document.getElementById('keterangan').value = rowData[20] || '';
       modalSiswaObj.show();
     }
 
@@ -442,15 +485,27 @@
       btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...';
 
       const formData = {
-        id: document.getElementById('id').value, nik: document.getElementById('nik').value,
-        nis: document.getElementById('nis').value, nisn: document.getElementById('nisn').value,
-        nama: document.getElementById('nama').value, tempatLahir: document.getElementById('tempatLahir').value,
-        tglLahir: document.getElementById('tglLahir').value, jk: document.getElementById('jk').value,
-        sekolahAsal: document.getElementById('sekolahAsal').value, namaAyah: document.getElementById('namaAyah').value,
-        namaIbu: document.getElementById('namaIbu').value, thnMasuk: document.getElementById('thnMasuk').value,
-        thnKeluar: document.getElementById('thnKeluar').value, status: document.getElementById('status').value,
-        urlFotoAwal: document.getElementById('urlFotoAwal').value, urlFotoLulus: document.getElementById('urlFotoLulus').value,
-        urlFotoKK: document.getElementById('urlFotoKK').value, urlIjazah: document.getElementById('urlIjazah').value
+        id: document.getElementById('id').value, 
+        nik: document.getElementById('nik').value,
+        nis: document.getElementById('nis').value, 
+        nisn: document.getElementById('nisn').value,
+        nama: document.getElementById('nama').value, 
+        tempatLahir: document.getElementById('tempatLahir').value,
+        tglLahir: document.getElementById('tglLahir').value, 
+        jk: document.getElementById('jk').value,
+        sekolahAsal: document.getElementById('sekolahAsal').value, 
+        namaAyah: document.getElementById('namaAyah').value,
+        namaIbu: document.getElementById('namaIbu').value, 
+        thnMasuk: document.getElementById('thnMasuk').value,
+        thnKeluar: document.getElementById('thnKeluar').value, 
+        status: document.getElementById('status').value,
+        tingkat: document.getElementById('tingkat').value,
+        urlFotoAwal: document.getElementById('urlFotoAwal').value, 
+        urlFotoLulus: document.getElementById('urlFotoLulus').value,
+        urlFotoKK: document.getElementById('urlFotoKK').value, 
+        urlIjazah: document.getElementById('urlIjazah').value,
+        melanjutkan: document.getElementById('melanjutkan').value,
+        keterangan: document.getElementById('keterangan').value
       };
 
       try {
@@ -479,33 +534,36 @@
         <div class="row g-3">
           <div class="col-md-6">
             <table class="table table-sm table-borderless">
-              <tr><th width="120">ID Siswa</th><td>: ${row[0] || '-'}</td></tr>
+              <tr><th width="130">ID Siswa</th><td>: ${row[0] || '-'}</td></tr>
               <tr><th>NIK</th><td>: ${row[1] || '-'}</td></tr>
               <tr><th>NIS</th><td>: ${row[2] || '-'}</td></tr>
               <tr><th>NISN</th><td>: ${row[3] || '-'}</td></tr>
               <tr><th>Nama</th><td>: <strong>${row[4] || '-'}</strong></td></tr>
               <tr><th>TTL</th><td>: ${row[5] || '-'}, ${row[6] || '-'}</td></tr>
               <tr><th>Jenis Kelamin</th><td>: ${row[7] === 'L' ? 'Laki-Laki' : 'Perempuan'}</td></tr>
+              <tr><th>Tingkat</th><td>: <span class="badge bg-primary">${formatTingkat(row[14])}</span></td></tr>
             </table>
           </div>
           <div class="col-md-6">
             <table class="table table-sm table-borderless">
-              <tr><th width="120">Sekolah Asal</th><td>: ${row[8] || '-'}</td></tr>
+              <tr><th width="130">Sekolah Asal</th><td>: ${row[8] || '-'}</td></tr>
               <tr><th>Nama Ayah</th><td>: ${row[9] || '-'}</td></tr>
               <tr><th>Nama Ibu</th><td>: ${row[10] || '-'}</td></tr>
               <tr><th>Thn Masuk</th><td>: ${row[11] || '-'}</td></tr>
               <tr><th>Thn Keluar</th><td>: ${row[12] || '-'}</td></tr>
               <tr><th>Status</th><td>: <span class="badge bg-secondary">${row[13] || '-'}</span></td></tr>
+              <tr><th>Melanjutkan Ke</th><td>: ${row[19] || '-'}</td></tr>
+              <tr><th>Keterangan</th><td>: ${row[20] || '-'}</td></tr>
             </table>
           </div>
         </div>
         <hr>
         <h6 class="fw-bold mb-3"><i class="fas fa-paperclip me-2"></i>Berkas Tautan Google Drive</h6>
         <div class="row g-2 text-center">
-          <div class="col-6 col-md-3"><div class="p-2 border rounded bg-light"><small class="d-block mb-1 fw-bold">Foto Awal</small>${fileLink(row[14], 'Foto')}</div></div>
-          <div class="col-6 col-md-3"><div class="p-2 border rounded bg-light"><small class="d-block mb-1 fw-bold">Foto Lulus</small>${fileLink(row[15], 'Foto')}</div></div>
-          <div class="col-6 col-md-3"><div class="p-2 border rounded bg-light"><small class="d-block mb-1 fw-bold">Foto KK</small>${fileLink(row[16], 'KK')}</div></div>
-          <div class="col-6 col-md-3"><div class="p-2 border rounded bg-light"><small class="d-block mb-1 fw-bold">Ijazah</small>${fileLink(row[17], 'Ijazah')}</div></div>
+          <div class="col-6 col-md-3"><div class="p-2 border rounded bg-light"><small class="d-block mb-1 fw-bold">Foto Awal</small>${fileLink(row[15], 'Foto')}</div></div>
+          <div class="col-6 col-md-3"><div class="p-2 border rounded bg-light"><small class="d-block mb-1 fw-bold">Foto Lulus</small>${fileLink(row[16], 'Foto')}</div></div>
+          <div class="col-6 col-md-3"><div class="p-2 border rounded bg-light"><small class="d-block mb-1 fw-bold">Foto KK</small>${fileLink(row[17], 'KK')}</div></div>
+          <div class="col-6 col-md-3"><div class="p-2 border rounded bg-light"><small class="d-block mb-1 fw-bold">Ijazah</small>${fileLink(row[18], 'Ijazah')}</div></div>
         </div>
       `;
       document.getElementById('detailContent').innerHTML = html;
@@ -615,12 +673,18 @@
       btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...';
 
       const formData = {
-        id: document.getElementById('uId').value, nama: document.getElementById('uNama').value,
-        username: document.getElementById('uUsername').value, password: document.getElementById('uPassword').value,
-        akses: document.getElementById('uAkses').value, user: document.getElementById('uUser').value,
-        detailUser: document.getElementById('uDetailUser').value, tambahUser: document.getElementById('uTambahUser').value,
-        hapusUser: document.getElementById('uHapusUser').value, siswa: document.getElementById('uSiswa').value,
-        detailSiswa: document.getElementById('uDetailSiswa').value, tambahSiswa: document.getElementById('uTambahSiswa').value,
+        id: document.getElementById('uId').value, 
+        nama: document.getElementById('uNama').value,
+        username: document.getElementById('uUsername').value, 
+        password: document.getElementById('uPassword').value,
+        akses: document.getElementById('uAkses').value, 
+        user: document.getElementById('uUser').value,
+        detailUser: document.getElementById('uDetailUser').value, 
+        tambahUser: document.getElementById('uTambahUser').value,
+        hapusUser: document.getElementById('uHapusUser').value, 
+        siswa: document.getElementById('uSiswa').value,
+        detailSiswa: document.getElementById('uDetailSiswa').value, 
+        tambahSiswa: document.getElementById('uTambahSiswa').value,
         hapusSiswa: document.getElementById('uHapusSiswa').value
       };
 
