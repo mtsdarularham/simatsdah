@@ -1,0 +1,46 @@
+<div class="space-y-4">
+    <div class="flex flex-col md:flex-row justify-between items-center gap-4 bg-white p-4 rounded-xl shadow-sm">
+        <button onclick="openModalTambah()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition">
+            <i class="fas fa-plus"></i> Tambah Guru
+        </button>
+        <div class="relative w-full md:w-64">
+            <input type="text" id="searchInput" placeholder="Cari Nama / Kode / ID..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50">
+            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-gray-50 text-gray-600 text-sm uppercase tracking-wider">
+                        <th class="p-4 font-medium">No</th>
+                        <th class="p-4 font-medium">ID</th>
+                        <th class="p-4 font-medium">Kode</th>
+                        <th class="p-4 font-medium">Nama</th>
+                        <th class="p-4 font-medium text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody" class="divide-y divide-gray-100">
+                    <tr><td colspan="5" class="text-center p-4"><i class="fas fa-spinner fa-spin"></i> Memuat...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="border-t bg-gray-50 p-4 flex flex-col md:flex-row justify-between items-center gap-3">
+            <div class="flex items-center gap-3 text-sm text-gray-600">
+                <span id="infoShowing">-</span>
+                <div class="flex items-center gap-2">
+                    <label for="perPageSelect" class="whitespace-nowrap">Baris per halaman:</label>
+                    <select id="perPageSelect" class="border rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary/50 bg-white">
+                        <option value="10">10</option>
+                        <option value="25" selected>25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+            </div>
+            <div id="paginationControls" class="flex items-center gap-1"></div>
+        </div>
+    </div>
+</div>

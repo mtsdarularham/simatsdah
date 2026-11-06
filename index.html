@@ -1,108 +1,708 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MTs Darul Arham - Dashboard</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Informasi Madrasah - MTs Darul Arham</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#166534',
+                        secondary: '#f59e0b',
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="config.js"></script>
 </head>
-<body class="bg-gray-100 font-sans">
+<body class="bg-gray-100 font-sans h-screen flex flex-col">
 
-  <!-- HEADER -->
-  <header class="bg-green-800 text-white px-6 py-3 flex justify-between items-center shadow-md">
-    <div class="flex items-center gap-3">
-      <img src="logo.png" alt="Logo" class="w-10 h-10 rounded-full bg-white p-1" onerror="this.src='https://via.placeholder.com/40'">
-      <h1 class="text-lg font-bold">MTs Darul Arham</h1>
-    </div>
-    <div class="flex items-center gap-4">
-      <span>🔔</span>
-      <span>👤 Admin</span>
-    </div>
-  </header>
-
-  <div class="flex min-h-screen">
-
-    <!-- SIDEBAR -->
-    <aside class="w-64 bg-green-800 text-white p-4">
-      <nav class="space-y-2">
-        <a href="#" onclick="loadModule('dashboard.html', this)" class="nav-item block px-3 py-2 rounded bg-yellow-500 text-green-900 font-semibold">🏠 Dashboard</a>
-        <a href="#" onclick="loadModule('siswa.html', this)" class="nav-item block px-3 py-2 rounded hover:bg-green-700">👨‍🎓 Siswa</a>
-        <a href="#" onclick="loadModule('guru.html', this)" class="nav-item block px-3 py-2 rounded hover:bg-green-700">👨‍🏫 Guru</a>
-        <a href="#" onclick="loadModule('mapel.html', this)" class="nav-item block px-3 py-2 rounded hover:bg-green-700">📚 Mapel</a>
-        <a href="#" onclick="loadModule('kelas.html', this)" class="nav-item block px-3 py-2 rounded hover:bg-green-700">🏫 Kelas</a>
-        <a href="#" onclick="loadModule('semester.html', this)" class="nav-item block px-3 py-2 rounded hover:bg-green-700">📅 Semester</a>
-
-        <!-- DROPDOWN RAPOR -->
-        <div>
-          <button onclick="this.nextElementSibling.classList.toggle('hidden')" class="w-full text-left px-3 py-2 rounded hover:bg-green-700 flex justify-between items-center">
-            <span>📊 Rapor</span>
-            <span>▾</span>
-          </button>
-          <div class="hidden pl-4 text-sm mt-1 space-y-1">
-            <a href="#" onclick="loadModule('upload-rapor.html', this)" class="block px-3 py-1 hover:bg-green-700 rounded">Upload Nilai Rapor</a>
-            <a href="#" onclick="loadModule('upload-wali.html', this)" class="block px-3 py-1 hover:bg-green-700 rounded">Upload Nilai Wali Kelas</a>
-            <a href="#" onclick="loadModule('cetak-rapor.html', this)" class="block px-3 py-1 hover:bg-green-700 rounded">Cetak Rapor</a>
-          </div>
+    <!-- ================= HEADER ================= -->
+    <header class="bg-white shadow-md p-4 flex justify-between items-center z-10">
+        <div class="flex items-center gap-3">
+            <img src="logo.png" alt="Logo" class="h-10 w-10 object-contain" onerror="this.src='https://via.placeholder.com/40'">
+            <h1 class="text-xl font-bold text-gray-800 hidden md:block">Sistem Informasi Madrasah</h1>
         </div>
-
-        <!-- DROPDOWN KEHADIRAN -->
-        <div>
-          <button onclick="this.nextElementSibling.classList.toggle('hidden')" class="w-full text-left px-3 py-2 rounded hover:bg-green-700 flex justify-between items-center">
-            <span>✅ Kehadiran</span>
-            <span>▾</span>
-          </button>
-          <div class="hidden pl-4 text-sm mt-1 space-y-1">
-            <a href="#" onclick="loadModule('absensi-siswa.html', this)" class="block px-3 py-1 hover:bg-green-700 rounded">Kehadiran Siswa</a>
-            <a href="#" onclick="loadModule('absensi-guru.html', this)" class="block px-3 py-1 hover:bg-green-700 rounded">Kehadiran Guru</a>
-          </div>
+        <div class="flex items-center gap-3">
+            <span class="text-sm font-medium text-gray-600">Jhon (Admin)</span>
+            <div class="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center">
+                <i class="fas fa-user text-gray-500"></i>
+            </div>
         </div>
-      </nav>
-    </aside>
+    </header>
 
-    <!-- WADAH KONTEN DINAMIS -->
-    <main id="app-content" class="flex-1 p-6">
-      <p class="text-gray-500">Memuat halaman...</p>
-    </main>
-  </div>
+    <div class="flex flex-1 overflow-hidden">
+        <!-- ================= SIDEBAR ================= -->
+        <aside class="w-64 bg-primary text-white flex-shrink-0 hidden md:flex flex-col">
+            <nav class="flex-1 p-4 space-y-2">
+                <a href="#" data-page="dashboard" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-white/20 transition nav-link active">
+                    <i class="fas fa-tachometer-alt w-5"></i> Dashboard
+                </a>
+                <a href="#" data-page="siswa" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-white/20 transition nav-link">
+                    <i class="fas fa-users w-5"></i> Data Siswa
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-white/20 transition opacity-50 cursor-not-allowed">
+                    <i class="fas fa-chalkboard-teacher w-5"></i> Guru
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-white/20 transition opacity-50 cursor-not-allowed">
+                    <i class="fas fa-book w-5"></i> Mata Pelajaran
+                </a>
+            </nav>
+        </aside>
 
-  <!-- SCRIPT IMPORT DINAMIS -->
-  <script>
-    async function loadModule(file, element) {
-      const contentDiv = document.getElementById('app-content');
-      contentDiv.innerHTML = '<div class="text-center py-10 text-gray-500">Memuat data...</div>';
+        <!-- ================= MAIN CONTENT ================= -->
+        <main id="main-content" class="flex-1 overflow-y-auto p-6 bg-gray-100">
+            <div class="flex justify-center items-center h-full text-gray-400">
+                <i class="fas fa-spinner fa-spin text-3xl"></i>
+            </div>
+        </main>
+    </div>
 
-      try {
-        const response = await fetch(file);
-        if (!response.ok) throw new Error('File tidak ditemukan');
-        const html = await response.text();
-        contentDiv.innerHTML = html;
+    <!-- ================= FOOTER ================= -->
+    <footer class="bg-white p-3 text-center text-sm text-gray-500 border-t">
+        &copy; 2025 MTs Darul Arham. All rights reserved.
+    </footer>
 
-        // Jalankan script di dalam file modul jika ada
-        const scripts = contentDiv.querySelectorAll('script');
-        scripts.forEach(oldScript => {
-          const newScript = document.createElement('script');
-          newScript.textContent = oldScript.textContent;
-          document.body.appendChild(newScript).parentNode.removeChild(newScript);
+    <!-- ================= MODAL CONTAINER ================= -->
+    <div id="modalContainer"></div>
+
+    <!-- ==================================================== -->
+    <!-- ================= GLOBAL VARIABLES ================= -->
+    <!-- ==================================================== -->
+    <script>
+        let allSiswa = [];          // Semua data siswa (sudah disortir)
+        let filteredSiswa = [];      // Data setelah difilter (search)
+        let currentPage = 1;         // Halaman aktif saat ini
+        let perPage = 25;            // Baris per halaman (default 25)
+    </script>
+
+    <!-- ==================================================== -->
+    <!-- ================= FUNGSI LOAD PAGE ================= -->
+    <!-- ==================================================== -->
+    <script>
+        async function loadPage(page, element) {
+            document.querySelectorAll('.nav-link').forEach(el => {
+                el.classList.remove('bg-white/20', 'font-bold');
+            });
+
+            const activeEl = element || document.querySelector('.nav-link[data-page="' + page + '"]');
+            if (activeEl) {
+                activeEl.classList.add('bg-white/20', 'font-bold');
+            }
+
+            const mainContent = document.getElementById('main-content');
+            mainContent.innerHTML = '<div class="flex justify-center items-center h-full"><i class="fas fa-spinner fa-spin text-3xl text-primary"></i></div>';
+
+            try {
+                const response = await fetch(page + '.html');
+                if (!response.ok) throw new Error('Halaman tidak ditemukan');
+                const html = await response.text();
+                mainContent.innerHTML = html;
+
+                if (page === 'siswa') {
+                    setTimeout(initSiswaPage, 50);
+                }
+                if (page === 'dashboard') {
+                    setTimeout(initDashboardPage, 50);
+                }
+            } catch (error) {
+                console.error("Gagal memuat halaman:", error);
+                mainContent.innerHTML = '<div class="text-red-500 p-4 bg-white rounded-xl shadow">Gagal memuat halaman: ' + error.message + '</div>';
+            }
+        }
+    </script>
+
+    <!-- ==================================================== -->
+    <!-- ================= FUNGSI HALAMAN SISWA ============= -->
+    <!-- ==================================================== -->
+    <script>
+        async function initSiswaPage() {
+            console.log("Inisialisasi halaman siswa...");
+            const tbody = document.getElementById('tableBody');
+            if (!tbody) {
+                console.error("Elemen tableBody tidak ditemukan!");
+                return;
+            }
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center p-4"><i class="fas fa-spinner fa-spin"></i> Memuat data siswa...</td></tr>';
+
+            // Reset pagination
+            currentPage = 1;
+            perPage = 25;
+
+            try {
+                const url = CONFIG.API_URL + '?action=read&sheet=' + CONFIG.SHEET_NAME;
+                console.log("Fetch dari:", url);
+
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('HTTP error! status: ' + response.status);
+
+                const result = await response.json();
+                console.log("Data diterima:", result);
+
+                if (result.status === 'success') {
+                    allSiswa = result.data;
+                    sortSiswa();
+                    filteredSiswa = allSiswa.slice();
+                    renderSiswaTable();
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="7" class="text-center p-4 text-red-500">Error: ' + (result.message || 'Tidak diketahui') + '</td></tr>';
+                }
+            } catch (error) {
+                console.error("Gagal fetch siswa:", error);
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center p-4 text-red-500">Gagal memuat: ' + error.message + '</td></tr>';
+            }
+
+            // ===== Search =====
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', function(e) {
+                    const keyword = e.target.value.toLowerCase();
+                    filteredSiswa = allSiswa.filter(s =>
+                        (s.Nama && s.Nama.toLowerCase().includes(keyword)) ||
+                        (s.NISN && String(s.NISN).includes(keyword)) ||
+                        (s.ID && String(s.ID).includes(keyword))
+                    );
+                    currentPage = 1;
+                    renderSiswaTable();
+                });
+            }
+
+            // ===== Per Page Selector =====
+            const perPageSelect = document.getElementById('perPageSelect');
+            if (perPageSelect) {
+                perPageSelect.value = String(perPage);
+                perPageSelect.addEventListener('change', function(e) {
+                    perPage = parseInt(e.target.value) || 25;
+                    currentPage = 1;
+                    renderSiswaTable();
+                });
+            }
+        }
+
+        // ===== SORTING: Status → Tingkat → ID → Nama =====
+        function sortSiswa() {
+            allSiswa.sort(function(a, b) {
+                // 1. Status: Aktif → Lulus → Lainnya
+                const statusOrder = { 'Aktif': 0, 'Lulus': 1 };
+                const statusA = statusOrder[a.Status] !== undefined ? statusOrder[a.Status] : 2;
+                const statusB = statusOrder[b.Status] !== undefined ? statusOrder[b.Status] : 2;
+                if (statusA !== statusB) return statusA - statusB;
+
+                // 2. Tingkat: Besar ke kecil
+                const tingkatA = parseInt(a.Tingkat) || 0;
+                const tingkatB = parseInt(b.Tingkat) || 0;
+                if (tingkatB !== tingkatA) return tingkatB - tingkatA;
+
+                // 3. ID: Kecil ke besar (numeric)
+                const idA = String(a.ID || '');
+                const idB = String(b.ID || '');
+                if (idA !== idB) return idA.localeCompare(idB, undefined, { numeric: true });
+
+                // 4. Nama: A → Z
+                const namaA = String(a.Nama || '').toLowerCase();
+                const namaB = String(b.Nama || '').toLowerCase();
+                return namaA.localeCompare(namaB);
+            });
+        }
+
+        // ===== RENDER TABEL (DENGAN PAGINATION) =====
+        function renderSiswaTable() {
+            const tbody = document.getElementById('tableBody');
+            if (!tbody) return;
+
+            const data = filteredSiswa || [];
+
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center p-4 text-gray-500">Tidak ada data siswa.</td></tr>';
+                renderPagination(0);
+                const infoShowing = document.getElementById('infoShowing');
+                if (infoShowing) infoShowing.textContent = 'Tidak ada data';
+                return;
+            }
+
+            // ===== HITUNG RANGE =====
+            const totalData = data.length;
+            const totalPages = Math.max(1, Math.ceil(totalData / perPage));
+
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            const startIndex = (currentPage - 1) * perPage;
+            const endIndex = Math.min(startIndex + perPage, totalData);
+            const pageData = data.slice(startIndex, endIndex);
+
+            // ===== RENDER BARIS =====
+            tbody.innerHTML = pageData.map(function(siswa, index) {
+                const no = startIndex + index + 1;
+                const id = siswa['ID'] || '-';
+                const nama = siswa['Nama'] || '-';
+                const nisn = siswa['NISN'] || '-';
+                const jk = siswa['Jenis Kelamin'] || '-';
+                const status = siswa['Status'] || '-';
+                const statusClass = (status === 'Aktif') ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800';
+
+                return '<tr class="hover:bg-gray-50 transition">' +
+                    '<td class="p-4 text-gray-600">' + no + '</td>' +
+                    '<td class="p-4 font-medium text-gray-800">' + id + '</td>' +
+                    '<td class="p-4 font-semibold text-gray-800">' + nama + '</td>' +
+                    '<td class="p-4 text-gray-600">' + nisn + '</td>' +
+                    '<td class="p-4 text-gray-600">' + jk + '</td>' +
+                    '<td class="p-4"><span class="px-2 py-1 text-xs font-semibold rounded-full ' + statusClass + '">' + status + '</span></td>' +
+                    '<td class="p-4 flex justify-center gap-2">' +
+                        '<button onclick="openModalDetail(\'' + id + '\')" class="p-2 bg-cyan-100 text-cyan-600 rounded-lg hover:bg-cyan-200 transition" title="Detail"><i class="fas fa-eye"></i></button>' +
+                        '<button onclick="openModalEdit(\'' + id + '\')" class="p-2 bg-yellow-100 text-yellow-600 rounded-lg hover:bg-yellow-200 transition" title="Edit"><i class="fas fa-edit"></i></button>' +
+                        '<button onclick="openModalDelete(\'' + id + '\')" class="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition" title="Hapus"><i class="fas fa-trash"></i></button>' +
+                    '</td>' +
+                '</tr>';
+            }).join('');
+
+            // ===== UPDATE INFO & PAGINATION =====
+            const infoShowing = document.getElementById('infoShowing');
+            if (infoShowing) {
+                infoShowing.textContent = 'Menampilkan ' + (startIndex + 1) + ' - ' + endIndex + ' dari ' + totalData + ' data';
+            }
+
+            renderPagination(totalPages);
+        }
+
+        // ===== RENDER KONTROL PAGINATION =====
+        function renderPagination(totalPages) {
+            const container = document.getElementById('paginationControls');
+            if (!container) return;
+
+            if (totalPages <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+
+            const btnClass = 'px-3 py-1 rounded-lg text-sm font-medium transition';
+            const activeClass = 'bg-primary text-white';
+            const inactiveClass = 'bg-white text-gray-700 hover:bg-gray-100 border';
+            const disabledClass = 'bg-gray-100 text-gray-400 cursor-not-allowed border';
+
+            let html = '';
+
+            // Tombol Prev
+            if (currentPage > 1) {
+                html += '<button onclick="gotoPage(' + (currentPage - 1) + ')" class="' + btnClass + ' ' + inactiveClass + '"><i class="fas fa-chevron-left"></i></button>';
+            } else {
+                html += '<button class="' + btnClass + ' ' + disabledClass + '" disabled><i class="fas fa-chevron-left"></i></button>';
+            }
+
+            // Nomor halaman dengan ellipsis
+            const pages = getPageNumbers(currentPage, totalPages);
+            pages.forEach(function(p) {
+                if (p === '...') {
+                    html += '<span class="px-2 py-1 text-gray-500">...</span>';
+                } else if (p === currentPage) {
+                    html += '<button class="' + btnClass + ' ' + activeClass + '">' + p + '</button>';
+                } else {
+                    html += '<button onclick="gotoPage(' + p + ')" class="' + btnClass + ' ' + inactiveClass + '">' + p + '</button>';
+                }
+            });
+
+            // Tombol Next
+            if (currentPage < totalPages) {
+                html += '<button onclick="gotoPage(' + (currentPage + 1) + ')" class="' + btnClass + ' ' + inactiveClass + '"><i class="fas fa-chevron-right"></i></button>';
+            } else {
+                html += '<button class="' + btnClass + ' ' + disabledClass + '" disabled><i class="fas fa-chevron-right"></i></button>';
+            }
+
+            container.innerHTML = html;
+        }
+
+        // ===== Helper: hitung nomor halaman yang ditampilkan =====
+        function getPageNumbers(current, total) {
+            const delta = 2;
+            const range = [];
+            const rangeWithDots = [];
+            let l;
+
+            for (let i = 1; i <= total; i++) {
+                if (i === 1 || i === total || (i >= current - delta && i <= current + delta)) {
+                    range.push(i);
+                }
+            }
+
+            range.forEach(function(i) {
+                if (l) {
+                    if (i - l === 2) {
+                        rangeWithDots.push(l + 1);
+                    } else if (i - l !== 1) {
+                        rangeWithDots.push('...');
+                    }
+                }
+                rangeWithDots.push(i);
+                l = i;
+            });
+
+            return rangeWithDots;
+        }
+
+        // ===== Helper: pindah halaman =====
+        function gotoPage(page) {
+            currentPage = page;
+            renderSiswaTable();
+
+            const table = document.querySelector('table');
+            if (table) {
+                table.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+    </script>
+
+    <!-- ==================================================== -->
+    <!-- ================= FUNGSI HALAMAN DASHBOARD ========= -->
+    <!-- ==================================================== -->
+    <script>
+        async function initDashboardPage() {
+            console.log("Inisialisasi halaman dashboard...");
+            try {
+                const response = await fetch(CONFIG.API_URL + '?action=read&sheet=' + CONFIG.SHEET_NAME);
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    const siswa = result.data;
+
+                    const elTotal = document.getElementById('stat-total-siswa');
+                    const elAktif = document.getElementById('stat-siswa-aktif');
+                    const elLaki = document.getElementById('stat-laki');
+                    const elPerempuan = document.getElementById('stat-perempuan');
+
+                    if (elTotal) elTotal.innerText = siswa.length;
+
+                    const aktif = siswa.filter(s => s.Status === 'Aktif').length;
+                    if (elAktif) elAktif.innerText = aktif;
+
+                    const laki = siswa.filter(s => s['Jenis Kelamin'] === 'L').length;
+                    if (elLaki) elLaki.innerText = laki;
+
+                    const perempuan = siswa.filter(s => s['Jenis Kelamin'] === 'P').length;
+                    if (elPerempuan) elPerempuan.innerText = perempuan;
+                }
+            } catch (error) {
+                console.error("Gagal memuat statistik:", error);
+            }
+        }
+    </script>
+
+    <!-- ==================================================== -->
+    <!-- ================= MODAL & CRUD ===================== -->
+    <!-- ==================================================== -->
+    <script>
+        function closeModal() {
+            document.getElementById('modalContainer').innerHTML = '';
+        }
+
+        // Helper: konversi tanggal ke format YYYY-MM-DD
+        function toDateInput(val) {
+            if (!val) return '';
+            try {
+                const d = new Date(val);
+                if (isNaN(d.getTime())) return '';
+                const yyyy = d.getFullYear();
+                const mm = String(d.getMonth() + 1).padStart(2, '0');
+                const dd = String(d.getDate()).padStart(2, '0');
+                return yyyy + '-' + mm + '-' + dd;
+            } catch (e) { return ''; }
+        }
+
+        // Helper: escape HTML
+        function esc(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        // ================= MODAL DETAIL =================
+        function openModalDetail(id) {
+            const siswa = allSiswa.find(s => String(s.ID) === String(id));
+            if (!siswa) { alert("Data tidak ditemukan."); return; }
+
+            function renderFile(label, url, btnText) {
+                if (!url || url === '-' || String(url).trim() === '') {
+                    return '<div class="border rounded-lg p-3 text-center bg-gray-50 opacity-60">' +
+                        '<p class="text-xs font-medium text-gray-500 mb-2">' + label + '</p>' +
+                        '<span class="text-xs text-gray-400">Tidak Ada File</span></div>';
+                }
+                return '<div class="border rounded-lg p-3 text-center bg-white shadow-sm hover:shadow-md transition">' +
+                    '<p class="text-xs font-medium text-gray-500 mb-2">' + label + '</p>' +
+                    '<a href="' + esc(url) + '" target="_blank" class="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 font-semibold">' +
+                    '<i class="fas fa-external-link-alt"></i> ' + btnText + '</a></div>';
+            }
+
+            const jk = siswa['Jenis Kelamin'] === 'L' ? 'Laki-laki' : (siswa['Jenis Kelamin'] === 'P' ? 'Perempuan' : '-');
+            const statusClass = siswa.Status === 'Aktif' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800';
+
+            const html = '<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">' +
+                '<div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">' +
+                    '<div class="p-4 border-b flex justify-between items-center bg-gray-50 rounded-t-xl">' +
+                        '<h3 class="text-lg font-bold text-gray-800"><i class="fas fa-info-circle text-blue-600 mr-2"></i>Detail Data Siswa</h3>' +
+                        '<button onclick="closeModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>' +
+                    '</div>' +
+                    '<div class="p-6 overflow-y-auto flex-1">' +
+                        '<div class="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-6 text-sm">' +
+                            '<div class="flex"><span class="w-32 font-medium text-gray-500">ID Siswa</span><span class="text-gray-800">: ' + esc(siswa.ID || '-') + '</span></div>' +
+                            '<div class="flex"><span class="w-32 font-medium text-gray-500">Sekolah Asal</span><span class="text-gray-800">: ' + esc(siswa['Sekolah Asal'] || '-') + '</span></div>' +
+                            '<div class="flex"><span class="w-32 font-medium text-gray-500">NIK</span><span class="text-gray-800">: ' + esc(siswa.NIK || '-') + '</span></div>' +
+                            '<div class="flex"><span class="w-32 font-medium text-gray-500">Nama Ayah</span><span class="text-gray-800">: ' + esc(siswa['Nama Ayah'] || '-') + '</span></div>' +
+                            '<div class="flex"><span class="w-32 font-medium text-gray-500">NIS</span><span class="text-gray-800">: ' + esc(siswa.NIS || '-') + '</span></div>' +
+                            '<div class="flex"><span class="w-32 font-medium text-gray-500">Nama Ibu</span><span class="text-gray-800">: ' + esc(siswa['Nama Ibu'] || '-') + '</span></div>' +
+                            '<div class="flex"><span class="w-32 font-medium text-gray-500">NISN</span><span class="text-gray-800">: ' + esc(siswa.NISN || '-') + '</span></div>' +
+                            '<div class="flex"><span class="w-32 font-medium text-gray-500">Thn Masuk</span><span class="text-gray-800">: ' + esc(siswa['Tahun Masuk'] || '-') + '</span></div>' +
+                            '<div class="flex"><span class="w-32 font-medium text-gray-500">Nama</span><span class="text-gray-800 font-semibold">: ' + esc(siswa.Nama || '-') + '</span></div>' +
+                            '<div class="flex"><span class="w-32 font-medium text-gray-500">Thn Keluar</span><span class="text-gray-800">: ' + esc(siswa['Tahun Keluar'] || '-') + '</span></div>' +
+                            '<div class="flex"><span class="w-32 font-medium text-gray-500">TTL</span><span class="text-gray-800">: ' + esc(siswa['Tempat Lahir'] || '-') + ', ' + esc(siswa['Tanggal Lahir'] || '-') + '</span></div>' +
+                            '<div class="flex items-center"><span class="w-32 font-medium text-gray-500">Status</span><span class="px-2 py-1 text-xs font-semibold rounded-full ' + statusClass + '">' + esc(siswa.Status || '-') + '</span></div>' +
+                            '<div class="flex"><span class="w-32 font-medium text-gray-500">Jenis Kelamin</span><span class="text-gray-800">: ' + jk + '</span></div>' +
+                            '<div class="flex"><span class="w-32 font-medium text-gray-500">Tingkat</span><span class="text-gray-800">: ' + esc(siswa.Tingkat || '-') + '</span></div>' +
+                            '<div class="flex md:col-span-2"><span class="w-32 font-medium text-gray-500">Keterangan</span><span class="text-gray-800">: ' + esc(siswa.Keterangan || '-') + '</span></div>' +
+                        '</div>' +
+                        '<div class="mt-6 border-t pt-4">' +
+                            '<h4 class="text-md font-bold text-gray-800 mb-3"><i class="fas fa-paperclip text-gray-500 mr-2"></i>Berkas Tautan Google Drive</h4>' +
+                            '<div class="grid grid-cols-2 md:grid-cols-4 gap-3">' +
+                                renderFile('Foto Awal', siswa['Foto Awal'], 'Lihat Foto') +
+                                renderFile('Foto Lulus', siswa['Foto Lulus'], 'Lihat Foto') +
+                                renderFile('Foto KK', siswa['Foto KK'], 'Lihat KK') +
+                                renderFile('Ijazah', siswa['Ijazah'], 'Lihat Ijazah') +
+                            '</div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="p-4 border-t bg-gray-50 rounded-b-xl flex justify-end">' +
+                        '<button onclick="closeModal()" class="px-6 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition">Tutup</button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+
+            document.getElementById('modalContainer').innerHTML = html;
+        }
+
+        // ================= FORM BUILDER (Tambah & Edit) =================
+        function buildFormSiswa(siswa) {
+            const s = siswa || {};
+            const isEdit = !!siswa;
+            function val(key) { return s[key] !== undefined && s[key] !== null ? s[key] : ''; }
+
+            return '<div class="grid grid-cols-1 md:grid-cols-2 gap-4">' +
+                '<div><label class="block text-sm font-medium text-gray-700 mb-1">ID Siswa *</label>' +
+                    '<input type="text" name="ID" value="' + esc(val('ID')) + '" ' + (isEdit ? 'readonly' : 'required') + ' class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none ' + (isEdit ? 'bg-gray-100' : '') + '"></div>' +
+                '<div><label class="block text-sm font-medium text-gray-700 mb-1">NIK</label>' +
+                    '<input type="text" name="NIK" value="' + esc(val('NIK')) + '" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>' +
+                '<div><label class="block text-sm font-medium text-gray-700 mb-1">NIS</label>' +
+                    '<input type="text" name="NIS" value="' + esc(val('NIS')) + '" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>' +
+                '<div><label class="block text-sm font-medium text-gray-700 mb-1">NISN</label>' +
+                    '<input type="text" name="NISN" value="' + esc(val('NISN')) + '" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>' +
+                '<div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap *</label>' +
+                    '<input type="text" name="Nama" value="' + esc(val('Nama')) + '" required class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>' +
+                '<div><label class="block text-sm font-medium text-gray-700 mb-1">Tempat Lahir</label>' +
+                    '<input type="text" name="Tempat Lahir" value="' + esc(val('Tempat Lahir')) + '" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>' +
+                '<div><label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Lahir</label>' +
+                    '<input type="date" name="Tanggal Lahir" value="' + toDateInput(val('Tanggal Lahir')) + '" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>' +
+                '<div><label class="block text-sm font-medium text-gray-700 mb-1">Jenis Kelamin</label>' +
+                    '<select name="Jenis Kelamin" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">' +
+                        '<option value="L" ' + (val('Jenis Kelamin') === 'L' ? 'selected' : '') + '>Laki-laki (L)</option>' +
+                        '<option value="P" ' + (val('Jenis Kelamin') === 'P' ? 'selected' : '') + '>Perempuan (P)</option>' +
+                    '</select></div>' +
+                '<div><label class="block text-sm font-medium text-gray-700 mb-1">Sekolah Asal</label>' +
+                    '<input type="text" name="Sekolah Asal" value="' + esc(val('Sekolah Asal')) + '" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>' +
+                '<div><label class="block text-sm font-medium text-gray-700 mb-1">Nama Ayah</label>' +
+                    '<input type="text" name="Nama Ayah" value="' + esc(val('Nama Ayah')) + '" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>' +
+                '<div><label class="block text-sm font-medium text-gray-700 mb-1">Nama Ibu</label>' +
+                    '<input type="text" name="Nama Ibu" value="' + esc(val('Nama Ibu')) + '" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>' +
+                '<div><label class="block text-sm font-medium text-gray-700 mb-1">Tahun Masuk</label>' +
+                    '<input type="text" name="Tahun Masuk" value="' + esc(val('Tahun Masuk')) + '" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>' +
+                '<div><label class="block text-sm font-medium text-gray-700 mb-1">Tahun Keluar</label>' +
+                    '<input type="text" name="Tahun Keluar" value="' + esc(val('Tahun Keluar')) + '" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>' +
+                '<div><label class="block text-sm font-medium text-gray-700 mb-1">Status</label>' +
+                    '<select name="Status" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">' +
+                        '<option value="Aktif" ' + (val('Status') === 'Aktif' ? 'selected' : '') + '>Aktif</option>' +
+                        '<option value="Lulus" ' + (val('Status') === 'Lulus' ? 'selected' : '') + '>Lulus</option>' +
+                        '<option value="Keluar" ' + (val('Status') === 'Keluar' ? 'selected' : '') + '>Keluar</option>' +
+                    '</select></div>' +
+                '<div><label class="block text-sm font-medium text-gray-700 mb-1">Tingkat Kelas</label>' +
+                    '<input type="text" name="Tingkat" value="' + esc(val('Tingkat')) + '" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>' +
+                '<div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700 mb-1">Tautan Dokumen (Google Drive Link)</label>' +
+                    '<div class="grid grid-cols-1 md:grid-cols-2 gap-2">' +
+                        '<input type="text" name="Foto Awal" placeholder="URL Foto Awal" value="' + esc(val('Foto Awal')) + '" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">' +
+                        '<input type="text" name="Foto Lulus" placeholder="URL Foto Lulus" value="' + esc(val('Foto Lulus')) + '" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">' +
+                        '<input type="text" name="Foto KK" placeholder="URL Foto KK" value="' + esc(val('Foto KK')) + '" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">' +
+                        '<input type="text" name="Ijazah" placeholder="URL Ijazah" value="' + esc(val('Ijazah')) + '" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">' +
+                    '</div></div>' +
+                '<div class="md:col-span-2"><label class="block text-sm font-medium text-gray-700 mb-1">Keterangan</label>' +
+                    '<textarea name="Keterangan" rows="3" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">' + esc(val('Keterangan')) + '</textarea></div>' +
+            '</div>';
+        }
+
+        // ================= MODAL TAMBAH =================
+        function openModalTambah() {
+            const html = '<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">' +
+                '<div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">' +
+                    '<div class="p-4 border-b flex justify-between items-center bg-gray-50 rounded-t-xl">' +
+                        '<h3 class="text-lg font-bold text-gray-800"><i class="fas fa-user-plus text-blue-600 mr-2"></i>Tambah Siswa Baru</h3>' +
+                        '<button onclick="closeModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>' +
+                    '</div>' +
+                    '<form id="formSiswa" onsubmit="submitForm(event, \'create\')" class="flex flex-col flex-1 overflow-hidden">' +
+                        '<div class="p-6 overflow-y-auto flex-1">' + buildFormSiswa(null) + '</div>' +
+                        '<div class="p-4 border-t bg-gray-50 rounded-b-xl flex justify-end gap-2">' +
+                            '<button type="button" onclick="closeModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">Batal</button>' +
+                            '<button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"><i class="fas fa-save mr-1"></i> Simpan Data</button>' +
+                        '</div>' +
+                    '</form>' +
+                '</div>' +
+            '</div>';
+            document.getElementById('modalContainer').innerHTML = html;
+        }
+
+        // ================= MODAL EDIT =================
+        function openModalEdit(id) {
+            const siswa = allSiswa.find(s => String(s.ID) === String(id));
+            if (!siswa) { alert("Data tidak ditemukan."); return; }
+
+            const html = '<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">' +
+                '<div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">' +
+                    '<div class="p-4 border-b flex justify-between items-center bg-gray-50 rounded-t-xl">' +
+                        '<h3 class="text-lg font-bold text-gray-800"><i class="fas fa-edit text-yellow-600 mr-2"></i>Ubah Data Siswa</h3>' +
+                        '<button onclick="closeModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times text-xl"></i></button>' +
+                    '</div>' +
+                    '<form id="formSiswa" onsubmit="submitForm(event, \'update\')" class="flex flex-col flex-1 overflow-hidden">' +
+                        '<div class="p-6 overflow-y-auto flex-1">' + buildFormSiswa(siswa) + '</div>' +
+                        '<div class="p-4 border-t bg-gray-50 rounded-b-xl flex justify-end gap-2">' +
+                            '<button type="button" onclick="closeModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">Batal</button>' +
+                            '<button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"><i class="fas fa-save mr-1"></i> Simpan Perubahan</button>' +
+                        '</div>' +
+                    '</form>' +
+                '</div>' +
+            '</div>';
+            document.getElementById('modalContainer').innerHTML = html;
+        }
+
+        // ================= MODAL HAPUS =================
+        function openModalDelete(id) {
+            const siswa = allSiswa.find(s => String(s.ID) === String(id));
+            if (!siswa) { alert("Data tidak ditemukan."); return; }
+
+            const html = '<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">' +
+                '<div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 text-center">' +
+                    '<div class="mx-auto w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mb-4">' +
+                        '<i class="fas fa-exclamation-triangle text-red-500 text-2xl"></i>' +
+                    '</div>' +
+                    '<h3 class="text-xl font-bold text-gray-800 mb-2">Konfirmasi Penghapusan</h3>' +
+                    '<p class="text-gray-500 text-sm mb-6">Apakah Anda yakin ingin menghapus data siswa <b class="text-gray-800">' + esc(siswa.Nama || '-') + '</b>?<br>Tindakan ini tidak dapat dibatalkan.</p>' +
+                    '<div class="flex justify-center gap-3">' +
+                        '<button onclick="closeModal()" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition font-medium">Batal</button>' +
+                        '<button onclick="deleteSiswa(\'' + id + '\')" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium">Ya, Hapus Data</button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+            document.getElementById('modalContainer').innerHTML = html;
+        }
+
+        // ================= SUBMIT FORM =================
+        async function submitForm(e, action) {
+            e.preventDefault();
+            const form = document.getElementById('formSiswa');
+            const formData = new FormData(form);
+            const data = {};
+            formData.forEach((value, key) => { data[key] = value; });
+
+            const btn = form.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Menyimpan...';
+
+            try {
+                const response = await fetch(CONFIG.API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: action,
+                        sheet: CONFIG.SHEET_NAME,
+                        data: data
+                    })
+                });
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    closeModal();
+                    alert(result.message);
+                    initSiswaPage();
+                } else {
+                    alert("Gagal: " + result.message);
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+            } catch (error) {
+                console.error("Submit error:", error);
+                alert("Terjadi kesalahan: " + error.message);
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+
+        // ================= DELETE =================
+        async function deleteSiswa(id) {
+            const btns = document.querySelectorAll('#modalContainer button');
+            let btn = null;
+            btns.forEach(b => {
+                if (b.textContent.includes('Hapus Data')) btn = b;
+            });
+            const originalText = btn ? btn.innerHTML : '';
+            if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Menghapus...'; }
+
+            try {
+                const response = await fetch(CONFIG.API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: 'delete',
+                        sheet: CONFIG.SHEET_NAME,
+                        data: { id: id }
+                    })
+                });
+                const result = await response.json();
+
+                if (result.status === 'success') {
+                    closeModal();
+                    alert(result.message);
+                    initSiswaPage();
+                } else {
+                    alert("Gagal: " + result.message);
+                    if (btn) { btn.disabled = false; btn.innerHTML = originalText; }
+                }
+            } catch (error) {
+                console.error("Delete error:", error);
+                alert("Terjadi kesalahan: " + error.message);
+                if (btn) { btn.disabled = false; btn.innerHTML = originalText; }
+            }
+        }
+    </script>
+
+    <!-- ==================================================== -->
+    <!-- ================= EVENT LISTENER =================== -->
+    <!-- ==================================================== -->
+    <script>
+        document.querySelectorAll('.nav-link').forEach(function(link) {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const page = this.getAttribute('data-page');
+                if (page) {
+                    loadPage(page, this);
+                }
+            });
         });
 
-        // Update styling menu aktif
-        if (element) {
-          document.querySelectorAll('.nav-item').forEach(nav => {
-            nav.classList.remove('bg-yellow-500', 'text-green-900', 'font-semibold');
-            nav.classList.add('hover:bg-green-700');
-          });
-          element.classList.add('bg-yellow-500', 'text-green-900', 'font-semibold');
-          element.classList.remove('hover:bg-green-700');
-        }
-      } catch (error) {
-        contentDiv.innerHTML = `<div class="p-4 bg-red-100 text-red-700 rounded">Gagal memuat modul: ${error.message}</div>`;
-      }
-    }
-
-    // Muat dashboard secara otomatis saat pertama kali dibuka
-    window.addEventListener('DOMContentLoaded', () => {
-      loadModule('dashboard.html', document.querySelector('.nav-item'));
-    });
-  </script>
+        window.addEventListener('DOMContentLoaded', function() {
+            loadPage('dashboard');
+        });
+    </script>
 </body>
 </html>

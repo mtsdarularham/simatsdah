@@ -1,0 +1,85 @@
+<div class="space-y-6">
+    <!-- Info Banner -->
+    <div class="bg-primary text-white p-6 rounded-2xl shadow-lg relative overflow-hidden">
+        <div class="relative z-10">
+            <h2 class="text-2xl font-bold mb-2">Selamat Datang di Sistem Informasi Madrasah</h2>
+            <p class="opacity-90">MTs Darul Arham - Tahun Pelajaran 2025/2026</p>
+        </div>
+        <i class="fas fa-school absolute right-4 bottom-4 text-8xl opacity-10"></i>
+    </div>
+
+    <!-- Statistik Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Total Siswa -->
+        <div class="bg-yellow-400 p-5 rounded-xl shadow-md flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-yellow-900 opacity-80">Total Siswa</p>
+                <h3 class="text-3xl font-bold text-yellow-900" id="stat-total-siswa">...</h3>
+            </div>
+            <div class="bg-yellow-500/30 p-3 rounded-full">
+                <i class="fas fa-users text-2xl text-yellow-900"></i>
+            </div>
+        </div>
+
+        <!-- Siswa Aktif -->
+        <div class="bg-blue-400 p-5 rounded-xl shadow-md flex items-center justify-between text-white">
+            <div>
+                <p class="text-sm font-medium opacity-90">Siswa Aktif</p>
+                <h3 class="text-3xl font-bold" id="stat-siswa-aktif">...</h3>
+            </div>
+            <div class="bg-blue-500/30 p-3 rounded-full">
+                <i class="fas fa-user-check text-2xl"></i>
+            </div>
+        </div>
+
+        <!-- Laki-laki -->
+        <div class="bg-red-400 p-5 rounded-xl shadow-md flex items-center justify-between text-white">
+            <div>
+                <p class="text-sm font-medium opacity-90">Laki-laki</p>
+                <h3 class="text-3xl font-bold" id="stat-laki">...</h3>
+            </div>
+            <div class="bg-red-500/30 p-3 rounded-full">
+                <i class="fas fa-mars text-2xl"></i>
+            </div>
+        </div>
+
+        <!-- Perempuan -->
+        <div class="bg-orange-400 p-5 rounded-xl shadow-md flex items-center justify-between text-white">
+            <div>
+                <p class="text-sm font-medium opacity-90">Perempuan</p>
+                <h3 class="text-3xl font-bold" id="stat-perempuan">...</h3>
+            </div>
+            <div class="bg-orange-500/30 p-3 rounded-full">
+                <i class="fas fa-venus text-2xl"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Ambil data statistik dari API
+    async function fetchDashboardStats() {
+        try {
+            const response = await fetch(`${CONFIG.API_URL}?action=read&sheet=${CONFIG.SHEET_NAME}`);
+            const result = await response.json();
+            
+            if (result.status === 'success') {
+                const siswa = result.data;
+                document.getElementById('stat-total-siswa').innerText = siswa.length;
+                
+                const aktif = siswa.filter(s => s.Status === 'Aktif').length;
+                document.getElementById('stat-siswa-aktif').innerText = aktif;
+
+                const laki = siswa.filter(s => s['Jenis Kelamin'] === 'L').length;
+                document.getElementById('stat-laki').innerText = laki;
+
+                const perempuan = siswa.filter(s => s['Jenis Kelamin'] === 'P').length;
+                document.getElementById('stat-perempuan').innerText = perempuan;
+            }
+        } catch (error) {
+            console.error("Gagal memuat statistik:", error);
+        }
+    }
+
+    fetchDashboardStats();
+</script>

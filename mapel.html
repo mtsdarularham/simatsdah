@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Mapel - MTs Darul Arham</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 font-sans p-4 md:p-8 text-slate-800">
+
+  <div class="max-w-5xl mx-auto bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+    <!-- Header & Pencarian -->
+    <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
+      <button onclick="openFormModal('tambah')" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2.5 rounded-xl shadow-sm flex items-center justify-center gap-2 transition-all">
+        <i class="fa-solid fa-plus"></i> Tambah Mapel Baru
+      </button>
+
+      <div class="relative w-full sm:w-80">
+        <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Cari Mapel / Singkatan / ID..." class="w-full pl-4 pr-10 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm">
+        <i class="fa-solid fa-magnifying-glass absolute right-3 top-3.5 text-slate-400 text-sm"></i>
+      </div>
+    </div>
+
+    <!-- Tabel Data Mapel -->
+    <div class="overflow-x-auto rounded-xl border border-slate-200">
+      <table class="w-full text-left border-collapse text-sm">
+        <thead>
+          <tr class="bg-slate-50 text-slate-700 font-semibold border-b border-slate-200">
+            <th class="p-3 text-center w-12">No</th>
+            <th class="p-3">ID</th>
+            <th class="p-3">Kode</th>
+            <th class="p-3">Mapel</th>
+            <th class="p-3 text-center">Singkatan</th>
+            <th class="p-3 text-center">Urutan</th>
+            <th class="p-3 text-center w-36">Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="subjectTableBody" class="divide-y divide-slate-100">
+          <!-- Data Mapel dirender di JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- POPUP 1: DETAIL MAPEL -->
+  <div id="detailModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden border border-slate-100">
+      <div class="flex justify-between items-center px-6 py-4 border-b border-slate-100">
+        <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+          <i class="fa-solid fa-circle-info text-slate-600"></i> Detail Data Mapel
+        </h3>
+        <button onclick="closeModal('detailModal')" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+      </div>
+
+      <div class="p-6 space-y-4 text-sm">
+        <div class="flex"><span class="w-32 font-medium text-slate-700">ID</span><span class="mr-2">:</span><span id="det-id" class="font-semibold text-slate-900"></span></div>
+        <div class="flex"><span class="w-32 font-medium text-slate-700">Kode</span><span class="mr-2">:</span><span id="det-kode"></span></div>
+        <div class="flex"><span class="w-32 font-medium text-slate-700">Mapel</span><span class="mr-2">:</span><span id="det-mapel" class="font-bold text-slate-900"></span></div>
+        <div class="flex"><span class="w-32 font-medium text-slate-700">Singkatan</span><span class="mr-2">:</span><span id="det-singkatan"></span></div>
+        <div class="flex"><span class="w-32 font-medium text-slate-700">Urutan</span><span class="mr-2">:</span><span id="det-urutan"></span></div>
+      </div>
+
+      <div class="px-6 py-3 bg-slate-50 border-t border-slate-100 text-right">
+        <button onclick="closeModal('detailModal')" class="bg-slate-600 hover:bg-slate-700 text-white font-medium px-5 py-2 rounded-xl text-sm transition-all">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- POPUP 2: FORM TAMBAH / UBAH MAPEL -->
+  <div id="formModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-xl overflow-hidden border border-slate-100">
+      <div class="flex justify-between items-center px-6 py-4 border-b border-slate-100">
+        <h3 id="formTitle" class="font-bold text-slate-800 text-lg">Tambah Mapel Baru</h3>
+        <button onclick="closeModal('formModal')" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+      </div>
+
+      <form id="subjectForm" onsubmit="saveSubject(event)" class="p-6 space-y-4">
+        <input type="hidden" id="editIndex">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">ID</label>
+            <input type="text" id="form-id" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Kode</label>
+            <input type="text" id="form-kode" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Nama Mapel</label>
+          <input type="text" id="form-mapel" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Singkatan</label>
+            <input type="text" id="form-singkatan" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Urutan</label>
+            <input type="number" id="form-urutan" value="0" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-100 flex justify-end gap-2">
+          <button type="button" onclick="closeModal('formModal')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium px-4 py-2 rounded-xl text-sm">Batal</button>
+          <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2 rounded-xl text-sm transition-all">Simpan Data</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- POPUP 3: KONFIRMASI HAPUS -->
+  <div id="deleteModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 border border-slate-100 text-center">
+      <div class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+        <i class="fa-solid fa-triangle-exclamation text-xl"></i>
+      </div>
+      <h3 class="text-lg font-bold text-slate-800 mb-2">Konfirmasi Penghapusan</h3>
+      <p class="text-sm text-slate-600 mb-6">Apakah Anda yakin ingin menghapus data mapel <strong id="deleteSubjectName"></strong>? Tindakan ini tidak dapat dibatalkan.</p>
+
+      <div class="flex justify-center gap-3">
+        <button onclick="closeModal('deleteModal')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium px-5 py-2 rounded-xl text-sm">Batal</button>
+        <button onclick="confirmDelete()" class="bg-red-600 hover:bg-red-700 text-white font-medium px-5 py-2 rounded-xl text-sm transition-all">Ya, Hapus Data</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPT LOGIKA -->
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbxi_Zlh6ucnQu-z9c04sMNBkCgdLwIJMaAigb9QVWMXYLuhujmgm8dROoFXO-ncgXEK/exec?sheet=mapel";
+
+    let subjectsData = [];
+    let deleteTargetIndex = null;
+
+    function fetchAndRenderData() {
+      const tbody = document.getElementById('subjectTableBody');
+      tbody.innerHTML = '<tr><td colspan="7" class="text-center p-4 text-slate-400">Memuat data dari Google Sheets...</td></tr>';
+
+      fetch(API_URL)
+        .then(response => response.json())
+        .then(data => {
+          if (!Array.isArray(data)) {
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center p-4 text-red-500">${data.error || 'Respons tidak valid'}</td></tr>`;
+            return;
+          }
+
+          subjectsData = data.map(item => ({
+            id: String(item['Id'] || item['ID'] || ''),
+            kode: String(item['Kode'] || ''),
+            mapel: item['Mapel'] || '',
+            singkatan: item['Singkatan'] || '',
+            urutan: String(item['Urutan'] !== undefined ? item['Urutan'] : '0')
+          }));
+
+          // Urutkan berdasarkan Urutan (numerik), lalu Mapel A-Z
+          subjectsData.sort((a, b) => {
+            const urutA = parseInt(a.urutan) || 0;
+            const urutB = parseInt(b.urutan) || 0;
+            if (urutA !== urutB) return urutA - urutB;
+            return a.mapel.localeCompare(b.mapel);
+          });
+
+          renderTable();
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+          tbody.innerHTML = '<tr><td colspan="7" class="text-center p-4 text-red-500">Gagal memuat data. Periksa kembali Web App URL Google Apps Script Anda.</td></tr>';
+        });
+    }
+
+    function renderTable(data = subjectsData) {
+      const tbody = document.getElementById('subjectTableBody');
+      tbody.innerHTML = '';
+
+      if (data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center p-4 text-slate-400">Tidak ada data mapel.</td></tr>';
+        return;
+      }
+
+      data.forEach((item, index) => {
+        const row = `
+          <tr class="hover:bg-slate-50 border-b border-slate-100">
+            <td class="p-3 text-center font-bold text-slate-700">${index + 1}</td>
+            <td class="p-3 text-slate-600">${item.id}</td>
+            <td class="p-3 text-slate-600">${item.kode}</td>
+            <td class="p-3 font-bold text-slate-800">${item.mapel}</td>
+            <td class="p-3 text-center text-slate-600">${item.singkatan}</td>
+            <td class="p-3 text-center text-slate-600">${item.urutan}</td>
+            <td class="p-3 text-center">
+              <div class="flex items-center justify-center gap-1">
+                <button onclick="openDetailModal(${index})" class="p-2 bg-cyan-400 hover:bg-cyan-500 text-white rounded-lg transition-all" title="View"><i class="fa-solid fa-eye"></i></button>
+                <button onclick="openFormModal('edit', ${index})" class="p-2 bg-amber-400 hover:bg-amber-500 text-white rounded-lg transition-all" title="Ubah"><i class="fa-solid fa-pen-to-square"></i></button>
+                <button onclick="openDeleteModal(${index})" class="p-2 bg-rose-500 hover:bg-rose-600 text-white rounded-lg transition-all" title="Hapus"><i class="fa-solid fa-trash"></i></button>
+              </div>
+            </td>
+          </tr>
+        `;
+        tbody.innerHTML += row;
+      });
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.add('hidden');
+    }
+
+    function openDetailModal(index) {
+      const m = subjectsData[index];
+      document.getElementById('det-id').innerText = m.id || '-';
+      document.getElementById('det-kode').innerText = m.kode || '-';
+      document.getElementById('det-mapel').innerText = m.mapel || '-';
+      document.getElementById('det-singkatan').innerText = m.singkatan || '-';
+      document.getElementById('det-urutan').innerText = m.urutan || '-';
+      document.getElementById('detailModal').classList.remove('hidden');
+    }
+
+    function openFormModal(mode, index = null) {
+      document.getElementById('subjectForm').reset();
+      if (mode === 'edit' && index !== null) {
+        document.getElementById('formTitle').innerText = 'Ubah Data Mapel';
+        document.getElementById('editIndex').value = index;
+        const m = subjectsData[index];
+        document.getElementById('form-id').value = m.id;
+        document.getElementById('form-kode').value = m.kode;
+        document.getElementById('form-mapel').value = m.mapel;
+        document.getElementById('form-singkatan').value = m.singkatan;
+        document.getElementById('form-urutan').value = m.urutan;
+      } else {
+        document.getElementById('formTitle').innerText = 'Tambah Mapel Baru';
+        document.getElementById('editIndex').value = '';
+      }
+      document.getElementById('formModal').classList.remove('hidden');
+    }
+
+    function saveSubject(event) {
+      event.preventDefault();
+      const editIdx = document.getElementById('editIndex').value;
+      const newSubject = {
+        id: document.getElementById('form-id').value,
+        kode: document.getElementById('form-kode').value,
+        mapel: document.getElementById('form-mapel').value,
+        singkatan: document.getElementById('form-singkatan').value,
+        urutan: document.getElementById('form-urutan').value
+      };
+
+      if (editIdx !== '') {
+        subjectsData[editIdx] = newSubject;
+      } else {
+        subjectsData.push(newSubject);
+      }
+
+      closeModal('formModal');
+      renderTable();
+    }
+
+    function openDeleteModal(index) {
+      deleteTargetIndex = index;
+      document.getElementById('deleteSubjectName').innerText = subjectsData[index].mapel;
+      document.getElementById('deleteModal').classList.remove('hidden');
+    }
+
+    function confirmDelete() {
+      if (deleteTargetIndex !== null) {
+        subjectsData.splice(deleteTargetIndex, 1);
+        deleteTargetIndex = null;
+        closeModal('deleteModal');
+        renderTable();
+      }
+    }
+
+    function filterTable() {
+      const keyword = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = subjectsData.filter(m =>
+        m.mapel.toLowerCase().includes(keyword) ||
+        m.singkatan.toLowerCase().includes(keyword) ||
+        m.id.toLowerCase().includes(keyword)
+      );
+      renderTable(filtered);
+    }
+
+    fetchAndRenderData();
+  </script>
+</body>
+</html>
