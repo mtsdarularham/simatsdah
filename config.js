@@ -1,5 +1,5 @@
 const CONFIG = {
-    API_URL: "https://script.google.com/macros/s/AKfycbwtZM8BUeo9hiFXkwhjGEycOsPXeY_RSlPqcZEk-64Fcs5kQZlv5ANxq1twFMIYIic4/exec",
+    // API_URL: "https://script.google.com/macros/s/AKfycbwtZM8BUeo9hiFXkwhjGEycOsPXeY_RSlPqcZEk-64Fcs5kQZlv5ANxq1twFMIYIic4/exec",
     SHEET_NAME: "siswa",
     APP_NAME: "Sistem Informasi Madrasah",
     SCHOOL_NAME: "MTs Darul Arham"
